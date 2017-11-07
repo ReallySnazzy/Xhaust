@@ -1,13 +1,13 @@
 # Xhaust
 
 ## Keywords
-<pre><code><span style="color:gold">in</span>("&lt;prompt&gt;")     <span style="color:gray;float:right">Take string input</span>
-<span style="color:orchid">nin</span>("&lt;prompt&gt;")     <span style="color:gray;float:right">Take numeric input</span>
-<span style="color:orange">exhaust</span> &lt;value&gt; { &lt;CODE&gt; }     <span style="color:gray;float:right">Loop &lt;CODE&gt;, deplete &lt;value&gt;</span>
-<span style="color:deepskyblue">out</span>(&lt;value&gt;)     <span style="color:gray;float:right">stdout</span>
-<span style="color:deeppink">chars</span>("&lt;characters&gt;")     <span style="color:gray;float:right">creates ascii list</span>
-<span style="color:aquamarine">head</span>(&lt;list&gt;)     <span style="color:gray;float:right">Get head of list</span>
-<span style="color:tomato">tail</span>(&lt;list&gt;)     <span style="color:gray;float:right">Get tail of list</span>
+<pre><code><span style="color:gold">in</span>("&lt;prompt&gt;")                             <span style="color:gray;float:right">Take string input</span>
+<span style="color:orchid">nin</span>("&lt;prompt&gt;")                            <span style="color:gray;float:right">Take numeric input</span>
+<span style="color:orange">exhaust</span> &lt;value&gt; { &lt;CODE&gt; }                 <span style="color:gray;float:right">Loop &lt;CODE&gt;, deplete &lt;value&gt;</span>
+<span style="color:deepskyblue">out</span>(&lt;value&gt;)                               <span style="color:gray;float:right">stdout</span>
+<span style="color:deeppink">chars</span>("&lt;characters&gt;")                      <span style="color:gray;float:right">creates ascii list</span>
+<span style="color:aquamarine">head</span>(&lt;list&gt;)                               <span style="color:gray;float:right">Get head of list</span>
+<span style="color:tomato">tail</span>(&lt;list&gt;)                               <span style="color:gray;float:right">Get tail of list</span>
 </code></pre>
 ## Examples
 
