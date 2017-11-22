@@ -1,8 +1,13 @@
 #include "treegen.hpp"
 
-TreeGenerator::TreeGenerator(std::vector<Token> tokens) {
+TreeGenerator* TreeGenerator::fromString(std::string source)
+{
+    return new TreeGenerator(tokenize(source));
+}
+
+TreeGenerator::TreeGenerator(std::vector<Token> tokens)
+{
     this->tokens = tokens;
-    this->marker = marker;
 }
 
 FunctionCallNode* TreeGenerator::parseFunctionCall()
@@ -59,7 +64,7 @@ TreeNode* TreeGenerator::parseMultiplication()
     if (tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "*" || tokens[marker].value == "/"))
     {
         std::string op = tokens[marker++].value;
-        TreeNode *rhs = parseExpression();
+        TreeNode *rhs = parseFactor();
         return new OperatorNode(op, lhs, rhs);
     }
     return lhs;
@@ -71,7 +76,7 @@ TreeNode* TreeGenerator::parseAddition()
     if (tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "+" || tokens[marker].value == "-"))
     {
         std::string op = tokens[marker++].value;
-        TreeNode *rhs = parseExpression();
+        TreeNode *rhs = parseMultiplication();
         return new OperatorNode(op, lhs, rhs);
     }
     return lhs;
@@ -98,7 +103,8 @@ TreeNode* TreeGenerator::parseExpression()
 std::vector<TreeNode*> TreeGenerator::buildTree()
 {
     std::vector<TreeNode*> nodes;
-    while (marker < tokens.size()) {
+    while (marker < tokens.size())
+    {
         nodes.push_back(parseExpression());
     }
     return nodes;
