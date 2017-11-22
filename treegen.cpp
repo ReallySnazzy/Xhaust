@@ -12,23 +12,24 @@ TreeGenerator::TreeGenerator(std::vector<Token> tokens)
 
 FunctionCallNode* TreeGenerator::parseFunctionCall()
 {
-    if (tokens[marker].value != "do")
+    if (tokens[marker++].value != "do")
     {
         throw new SyntaxException(-1, "Expected do at beginning of function call");
     }
-    ++marker;
-    std::string functionIdentifier = tokens[marker].value;
-    ++marker;
-    if (tokens[marker].value != "(")
+    std::string functionIdentifier = tokens[marker++].value;
+    if (tokens[marker++].value != "(")
     {
         throw new SyntaxException(-1, "Expected ( at the beginning of function arguments");
     }
-    ++marker;
     std::vector<TreeNode*> arguments;
-    do {
-        arguments.push_back(parseExpression());
-    } while (tokens[marker++].value == ",");
-    if (tokens[marker-1].value != ")")
+    if (tokens[marker].value != ")")
+    {
+        do {
+            arguments.push_back(parseExpression());
+        } while (tokens[marker++].value == ",");
+        --marker;
+    }
+    if (tokens[marker++].value != ")")
     {
         throw new SyntaxException(-1, "Expected ) at the end of function arguments");
     }
@@ -39,9 +40,10 @@ GroupNode* TreeGenerator::parseGroup()
 {
     ++marker;
     GroupNode *res = new GroupNode(parseExpression());
-    if (tokens[marker].value != ")") {
+    if (tokens[marker++].value != ")") {
         throw new SyntaxException(-1, ") expected to close expression");
     }
+    return res;
 }
 
 TreeNode* TreeGenerator::parseFactor()
@@ -51,6 +53,8 @@ TreeNode* TreeGenerator::parseFactor()
     {
         if (token.type == TK_OPERATOR && token.value == "(")
             return parseGroup();
+        else if (token.type == TK_KEYWORD && token.value == "do")
+            return parseFunctionCall();
         else
             throw new SyntaxException(-1, "Expected number or identifier");
     }
@@ -84,20 +88,7 @@ TreeNode* TreeGenerator::parseAddition()
 
 TreeNode* TreeGenerator::parseExpression()
 {
-    if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "do")
-    {
-        FunctionCallNode *node = parseFunctionCall();
-        return node;
-    }
-    else if (tokens[marker].type == TK_OPERATOR && tokens[marker].value == "(")
-    {
-        GroupNode *group = parseGroup();
-        return group;
-    }
-    else if (tokens[marker].type == TK_IDENTIFIER || tokens[marker].type == TK_NUMBER)
-    {
-        return parseAddition();
-    }
+    parseAddition();
 }
 
 std::vector<TreeNode*> TreeGenerator::buildTree()

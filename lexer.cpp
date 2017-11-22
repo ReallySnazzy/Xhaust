@@ -15,7 +15,7 @@ class Lexer {
         this->source = source;
     }
 
-    const std::vector<std::string> OPERATORS = {">=", "<=", "<", "%", ">", "==", "=", "!=", "+", "-", "**", "*", "/", "^", "~", "!", "(", ")", "[", "]", "{", "}", ";"};
+    const std::vector<std::string> OPERATORS = {">=", "<=", "<", "%", ">", "==", "=", "!=", "+", "-", "**", "*", "/", "^", "~", "!", "(", ")", "[", "]", "{", "}", ";", ","};
     const std::vector<std::string> KEYWORDS = {"exhaust", "do"};
 
     void addToken(std::string value, int type) {
@@ -30,10 +30,11 @@ class Lexer {
         std::string word;
         while (isLetter(source[marker]))
         {
-            word += source[marker++];
+            word += source[marker];
+            marker++;
         }
-        addToken(word, std::find(KEYWORDS.begin(),
-            KEYWORDS.end(), word) != KEYWORDS.end() ? TK_KEYWORD : TK_IDENTIFIER);
+        bool isKeyword = (std::find(KEYWORDS.begin(), KEYWORDS.end(), word) != KEYWORDS.end());
+        addToken(word, isKeyword ? TK_KEYWORD : TK_IDENTIFIER);
     }
 
     void readNum(int& marker)
@@ -49,16 +50,23 @@ class Lexer {
     void skipWhitespace(int& marker)
     {
         while (isWhitespace(source[marker++]));
+        --marker;
     }
 
     void readOperator(int& marker)
     {
+        bool added = false;
         for (std::string possibleOperator : OPERATORS) {
             if (source.substr(marker, possibleOperator.length()) == possibleOperator) {
                 marker += possibleOperator.length();
                 addToken(possibleOperator, TK_OPERATOR);
+                added = true;
                 break;
             }
+        }
+        if (!added)
+        {
+            throw new SyntaxException(-1, std::string("Unknown symbol ") + source[marker]);
         }
     }
 
