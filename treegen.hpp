@@ -12,6 +12,8 @@
 #define TN_GROUP 1
 #define TN_VALUE 2
 #define TN_OPERATOR 3
+#define TN_BLOCK 4
+#define TN_IF 5
 
 class TreeNode
 {
@@ -30,7 +32,7 @@ public:
 
     FunctionCallNode(std::string functionName, std::vector<TreeNode*> args)
     : functionName(functionName), functionArguments(args) {type = TN_FUNC_CALL;}
-    ~FunctionCallNode() {for (TreeNode* tn : functionArguments) if (tn != nullptr) delete tn;}
+    virtual ~FunctionCallNode() {for (TreeNode* tn : functionArguments) if (tn != nullptr) delete tn;}
 
     virtual void print(int level) const
     {
@@ -47,7 +49,7 @@ class GroupNode : public TreeNode
 public:
     const TreeNode *expression = nullptr;
     GroupNode(TreeNode *expr) : expression(expr) {type = TN_GROUP;}
-    ~GroupNode() { if (expression != nullptr) delete expression;}
+    virtual ~GroupNode() { if (expression != nullptr) delete expression; expression = nullptr; }
 
     virtual void print(int level) const
     {
@@ -64,12 +66,66 @@ public:
     const std::string value;
     const bool isConstant;
     ValueNode(std::string value, bool isConstant) : value(value), isConstant(isConstant) {type = TN_VALUE;}
+    virtual ~ValueNode() = default;
 
     virtual void print(int level) const
     {
         for (int i = 0; i < level; i++)
             std::cout << "  ";
         std::cout << "Value : " << value << std::endl;
+    }
+};
+
+class BlockNode : public TreeNode
+{
+public:
+    const std::vector<TreeNode*> body;
+
+    BlockNode(std::vector<TreeNode*> body) : body(body)
+    {
+        type = TN_BLOCK;
+    }
+
+    ~BlockNode()
+    {
+        for (TreeNode *elem : body)
+            delete elem;
+    }
+
+    virtual void print(int level) const
+    {
+        for (int i = 0; i < level; i++)
+            std::cout << "  ";
+        std::cout << "Block" << std::endl;
+        for (TreeNode *elem : body)
+            elem->print(level + 1);
+    }
+};
+
+class IfNode : public TreeNode
+{
+public:
+    const TreeNode* condition;
+    const TreeNode* body;
+
+    IfNode(TreeNode *condition, TreeNode *body) : condition(condition), body(body)
+    {
+        type = TN_IF;
+    }
+
+    virtual ~IfNode()
+    {
+        delete condition;
+        delete body;
+    }
+
+    virtual void print(int level) const
+    {
+        for (int i = 0; i < level; i++)
+            std::cout << "  ";
+        std::cout << "If" << std::endl;
+        condition->print(level+1);
+        body->print(level+1);
     }
 };
 
@@ -80,8 +136,15 @@ public:
     const TreeNode *lhs = nullptr, *rhs = nullptr;
 
 public:
-    OperatorNode(std::string op, TreeNode *lhs, TreeNode *rhs) : op(op), lhs(lhs), rhs(rhs) {type = TN_OPERATOR;}
-    virtual ~OperatorNode() {if (lhs != nullptr) delete lhs; if (rhs != nullptr) delete rhs;}
+    OperatorNode(std::string op, TreeNode *lhs, TreeNode *rhs) : op(op), lhs(lhs), rhs(rhs)
+    {
+        type = TN_OPERATOR;
+    }
+
+    virtual ~OperatorNode() {
+        if (lhs != nullptr) delete lhs;
+        if (rhs != nullptr) delete rhs;
+    }
 
     virtual void print(int level) const
     {
@@ -106,7 +169,12 @@ public:
     TreeNode* parseExpression();
     TreeNode* parseMultiplication();
     TreeNode* parseAddition();
+    TreeNode* parseAssignment();
     TreeNode* parseFactor();
+    BlockNode* parseBlock();
+    TreeNode* parseConditional();
+    IfNode* parseIf();
+    TreeNode* parseStatement();
     std::vector<TreeNode*> buildTree();
 };
 

@@ -16,7 +16,7 @@ class Lexer {
     }
 
     const std::vector<std::string> OPERATORS = {">=", "<=", "<", "%", ">", "==", "=", "!=", "+", "-", "**", "*", "/", "^", "~", "!", "(", ")", "[", "]", "{", "}", ";", ","};
-    const std::vector<std::string> KEYWORDS = {"exhaust", "do"};
+    const std::vector<std::string> KEYWORDS = {"exhaust", "do", "if"};
 
     void addToken(std::string value, int type) {
         Token t;
