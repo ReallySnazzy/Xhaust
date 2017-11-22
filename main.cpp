@@ -4,14 +4,21 @@
 
 void runCode(std::string source)
 {
-    Interpreter *i = Interpreter::fromSource(source);
-    std::cout << "Ran: " << source << std::endl;
-    std::cout << "============================================================" << std::endl;
-    int result = i->start();
-    delete i;
-    std::cout << "============================================================" << std::endl;
-    std::cout << "The program returned " << result << std::endl;
-    std::cout << "============================================================" << std::endl;
+    try
+    {
+        Interpreter *i = Interpreter::fromSource(source);
+        std::cout << "Ran: " << source << std::endl;
+        std::cout << "============================================================" << std::endl;
+        int result = i->start();
+        delete i;
+        std::cout << "============================================================" << std::endl;
+        std::cout << "The program returned " << result << std::endl;
+        std::cout << "============================================================" << std::endl;
+    }
+    catch (std::exception *ex)
+    {
+        std::cout << ex->what() << std::endl;
+    }
 }
 
 void runFile(std::string fileName)
@@ -26,14 +33,15 @@ void runFile(std::string fileName)
     runCode(source);
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    try
+    if (argc > 1)
+    {
+        std::string fileName = std::string(argv[1]);
+        runFile(fileName);
+    }
+    else
     {
         runFile("test.xh");
-    }
-    catch (std::exception *ex)
-    {
-        std::cout << ex->what() << std::endl;
     }
 }
