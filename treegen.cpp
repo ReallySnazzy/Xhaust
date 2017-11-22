@@ -14,7 +14,7 @@ FunctionCallNode* TreeGenerator::parseFunctionCall()
     ++marker;
     std::string functionIdentifier = tokens[marker].value;
     ++marker;
-    if (tokens[marker].value != "(") 
+    if (tokens[marker].value != "(")
     {
         throw new SyntaxException(-1, "Expected ( at the beginning of function arguments");
     }
@@ -39,42 +39,63 @@ GroupNode* TreeGenerator::parseGroup()
     }
 }
 
-TreeNode* TreeGenerator::appendExpressionsTogetherOrFinish(TreeNode* lhs) 
+TreeNode* TreeGenerator::parseFactor()
 {
-    if (tokens.size() > marker + 1 && tokens[marker+1].type == TK_OPERATOR
-        && tokens[marker+1].value != ")" && tokens[marker+1].value != ",") 
+    Token token = tokens[marker];
+    if (token.type != TK_IDENTIFIER && token.type != TK_NUMBER)
     {
-        std::string op = tokens[marker+1].value;
-        marker += 2;
-        return new OperatorNode(op, lhs, parseExpression());
-    } 
-    else
-    {
-        return lhs;
+        if (token.type == TK_OPERATOR && token.value == "(")
+            return parseGroup();
+        else
+            throw new SyntaxException(-1, "Expected number or identifier");
     }
+    marker++;
+    return new ValueNode(token.value, token.type == TK_NUMBER);
 }
 
-TreeNode* TreeGenerator::parseExpression() 
+TreeNode* TreeGenerator::parseMultiplication()
 {
-    if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "do") 
+    TreeNode *lhs = parseFactor();
+    if (tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "*" || tokens[marker].value == "/"))
+    {
+        std::string op = tokens[marker++].value;
+        TreeNode *rhs = parseExpression();
+        return new OperatorNode(op, lhs, rhs);
+    }
+    return lhs;
+}
+
+TreeNode* TreeGenerator::parseAddition()
+{
+    TreeNode *lhs = parseMultiplication();
+    if (tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "+" || tokens[marker].value == "-"))
+    {
+        std::string op = tokens[marker++].value;
+        TreeNode *rhs = parseExpression();
+        return new OperatorNode(op, lhs, rhs);
+    }
+    return lhs;
+}
+
+TreeNode* TreeGenerator::parseExpression()
+{
+    if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "do")
     {
         FunctionCallNode *node = parseFunctionCall();
-        return appendExpressionsTogetherOrFinish(node);
-    } 
-    else if (tokens[marker].type == TK_OPERATOR && tokens[marker].value == "(") 
+        return node;
+    }
+    else if (tokens[marker].type == TK_OPERATOR && tokens[marker].value == "(")
     {
         GroupNode *group = parseGroup();
-        return appendExpressionsTogetherOrFinish(group);
+        return group;
     }
-    // TODO: Respect pemdas
-    else if (tokens[marker].type == TK_IDENTIFIER || tokens[marker].type == TK_NUMBER) 
+    else if (tokens[marker].type == TK_IDENTIFIER || tokens[marker].type == TK_NUMBER)
     {
-        ValueNode *val = new ValueNode(tokens[marker].value, tokens[marker].type == TK_IDENTIFIER);
-        return appendExpressionsTogetherOrFinish(val);
+        return parseAddition();
     }
 }
 
-std::vector<TreeNode*> TreeGenerator::buildTree() 
+std::vector<TreeNode*> TreeGenerator::buildTree()
 {
     std::vector<TreeNode*> nodes;
     while (marker < tokens.size()) {

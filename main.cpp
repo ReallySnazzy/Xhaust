@@ -1,4 +1,7 @@
 #include <iostream>
 #include "treegen.hpp"
 
-int main() {}
+int main()
+{
+    
+}
