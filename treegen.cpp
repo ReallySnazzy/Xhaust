@@ -91,7 +91,8 @@ TreeNode* TreeGenerator::parseConditional()
     TreeNode *lhs = parseAddition();
     if (tokens.size() > marker + 1 && tokens[marker].type == TK_OPERATOR)
     {
-        if (tokens[marker].value == "==" || tokens[marker].value == ">=" || tokens[marker].value == "<=" || tokens[marker].value == "!=")
+        if (tokens[marker].value == "==" || tokens[marker].value == ">=" || tokens[marker].value == "<="
+            || tokens[marker].value == "!=" || tokens[marker].value == ">" || tokens[marker].value == "<")
         {
             std::string conditionalOp = tokens[marker++].value;
             TreeNode *rhs = parseAddition();

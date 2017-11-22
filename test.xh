@@ -1,0 +1,15 @@
+lol = 5
+if (lol == 7-2)
+{
+    lol=10
+    xd=20
+    do Out(lol, xd)
+}
+if (lol == 10)
+{
+    do Out(1337)
+}
+if (lol == 9)
+{
+    do Out(7331)
+}

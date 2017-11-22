@@ -1,30 +1,38 @@
 #include <iostream>
-#include "treegen.hpp"
+#include <fstream>
+#include "interpreter.hpp"
 
-void outputTree(std::string source)
+void runCode(std::string source)
 {
-    TreeGenerator* tg = TreeGenerator::fromString(source);
-    std::vector<TreeNode*> nodes = tg->buildTree();
-    std::cout << source << std::endl;
-    for (TreeNode* tn : nodes)
-        tn->print(1);
-    for (TreeNode* tn : nodes)
-        delete tn;
-    delete tg;
-    std::cout << std::endl;
+    Interpreter *i = Interpreter::fromSource(source);
+    std::cout << "Ran: " << source << std::endl;
+    std::cout << "============================================================" << std::endl;
+    int result = i->start();
+    delete i;
+    std::cout << "============================================================" << std::endl;
+    std::cout << "The program returned " << result << std::endl;
+    std::cout << "============================================================" << std::endl;
+}
+
+void runFile(std::string fileName)
+{
+    std::fstream sourceFile(fileName);
+    std::string line;
+    std::string source;
+    while (sourceFile && std::getline(sourceFile, line))
+    {
+        source += line + "\n";
+    }
+    runCode(source);
 }
 
 int main()
 {
     try
     {
-        outputTree("5*2+9*7");
-        outputTree("do testCall()");
-        outputTree("(do testCall(14+2,99,bottles,beer))*9");
-        outputTree("lol=99");
-        outputTree("lol = 5 if (lol == 5) {lol=10 xd=20}");
+        runFile("test.xh");
     }
-    catch (SyntaxException *ex)
+    catch (std::exception *ex)
     {
         std::cout << ex->what() << std::endl;
     }
