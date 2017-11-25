@@ -327,6 +327,19 @@ XhaustValue Interpreter::funcCall(const FunctionCallNode *node)
         std::cout << std::endl;
         return XhaustValue::fromBoolean(true);
     }
+    else if (node->functionName == "In")
+    {
+        for (int i = 0; i < node->functionArguments.size(); ++i)
+        {
+            XhaustValue result = evaluate(node->functionArguments[i]);
+            if (i > 0)
+                std::cout << ", ";
+            std::cout << result.toString();
+        }
+        std::string line;
+        std::getline(std::cin, line);
+        return XhaustValue::fromString(line);
+    }
     else
     {
         throw new std::exception();

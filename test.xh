@@ -7,6 +7,9 @@ if (lol == 7-2)
     do Out(lol, xd)
     // String concatenation now supported
     do Out("Hel" + "lo, world!")
+    // Now supporting console input
+    name = do In("What's your name? ")
+    do Out("Hello, " + name)
 }
 if (lol == 9)
 {
