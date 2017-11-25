@@ -68,7 +68,7 @@ TreeNode* TreeGenerator::parseMultiplication()
     if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "*" || tokens[marker].value == "/"))
     {
         std::string op = tokens[marker++].value;
-        TreeNode *rhs = parseFactor();
+        TreeNode *rhs = parseMultiplication();
         return new OperatorNode(op, lhs, rhs);
     }
     return lhs;
@@ -80,7 +80,7 @@ TreeNode* TreeGenerator::parseAddition()
     if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "+" || tokens[marker].value == "-"))
     {
         std::string op = tokens[marker++].value;
-        TreeNode *rhs = parseMultiplication();
+        TreeNode *rhs = parseAddition();
         return new OperatorNode(op, lhs, rhs);
     }
     return lhs;

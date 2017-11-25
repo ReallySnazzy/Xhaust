@@ -9,7 +9,8 @@ if (lol == 7-2)
     do Out("Hel" + "lo, world!")
     // Now supporting console input
     name = do In("What's your name? ")
-    do Out("Hello, " + name)
+    do Out("Hello, " + name + "!")
+    do Out(5*5*5)
 }
 if (lol == 9)
 {
