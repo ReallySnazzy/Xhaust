@@ -1,3 +1,9 @@
+#compilation files
 *.o
 *.exe
+
+#ide settings
+.vscode
+
+#misc
 err.txt
