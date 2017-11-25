@@ -9,10 +9,10 @@ void runCode(std::string source)
         Interpreter *i = Interpreter::fromSource(source);
         std::cout << "Ran: " << source << std::endl;
         std::cout << "============================================================" << std::endl;
-        int result = i->start();
+        XhaustValue result = i->start();
         delete i;
         std::cout << "============================================================" << std::endl;
-        std::cout << "The program returned " << result << std::endl;
+        std::cout << "The program returned " << result.toString() << std::endl;
         std::cout << "============================================================" << std::endl;
     }
     catch (std::exception *ex)

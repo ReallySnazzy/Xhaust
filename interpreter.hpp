@@ -3,12 +3,61 @@
 
 #include "treegen.hpp"
 #include <map>
+#include <cstdint>
+
+enum class XhaustValueTypes
+{
+    number,
+    string,
+    object,
+    boolean,
+    nulltype
+};
+
+// A class that represents an xhaust value.
+class XhaustValue
+{
+private:
+    XhaustValueTypes type = XhaustValueTypes::nulltype;
+
+    double valueNumber;
+    std::string valueString;
+    bool valueBoolean;
+    void* valueObject;
+
+
+public:
+    XhaustValue() = default;
+    XhaustValueTypes getType() const;
+
+    static XhaustValue fromBoolean(bool);
+    static XhaustValue fromNumber(double);
+    static XhaustValue fromString(std::string);
+    static XhaustValue fromObject(void*);
+    static XhaustValue fromNull();
+
+    XhaustValue operator==(const XhaustValue &other) const;
+    XhaustValue operator>=(const XhaustValue &other) const;
+    XhaustValue operator<=(const XhaustValue &other) const;
+    XhaustValue operator>(const XhaustValue &other) const;
+    XhaustValue operator<(const XhaustValue &other) const;
+
+    XhaustValue operator+(const XhaustValue &other) const;
+    XhaustValue operator-(const XhaustValue &other) const;
+    XhaustValue operator/(const XhaustValue &other) const;
+    XhaustValue operator*(const XhaustValue &other) const;
+
+    operator bool() const;
+
+    std::string toString() const;
+    double getNumberValue() const;
+};
 
 // All variables are stored internally as integers.
 class VariableStateManager
 {
 private:
-    std::vector<std::map<std::string, int>> states;
+    std::vector<std::map<std::string, XhaustValue>> states;
 
 public:
     // Starts with an empty state.
@@ -20,9 +69,9 @@ public:
     // Gets rid of the current state and restores the previous one.
     void popState();
 
-    int getVariable(std::string name);
+    XhaustValue getVariable(std::string name);
     bool hasVariable(std::string name);
-    void setVariable(std::string name, int value);
+    void setVariable(std::string name, XhaustValue value);
 };
 
 class Interpreter
@@ -33,18 +82,18 @@ private:
 
     Interpreter(std::vector<TreeNode*> nodes);
 
-    int resolve(const ValueNode*);
-    int funcCall(const FunctionCallNode*);
-    int conditional(const IfNode*);
-    int evalBlock(const BlockNode*);
+    XhaustValue resolve(const ValueNode*);
+    XhaustValue funcCall(const FunctionCallNode*);
+    XhaustValue conditional(const IfNode*);
+    XhaustValue evalBlock(const BlockNode*);
 
 public:
     virtual ~Interpreter();
     static Interpreter* fromSource(std::string source);
-    int evaluate(const TreeNode *node);
-    int evaluateFunction(const TreeNode *functionNode, std::vector<int> args);
-    int performOperator(const OperatorNode *opNode);
-    int start();
+    XhaustValue evaluate(const TreeNode *node);
+    XhaustValue evaluateFunction(const TreeNode *functionNode, std::vector<XhaustValue> args);
+    XhaustValue performOperator(const OperatorNode *opNode);
+    XhaustValue start();
 };
 
 #endif // interpreter_hpp

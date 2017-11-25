@@ -1,4 +1,6 @@
 #include "interpreter.hpp"
+#include <iomanip>
+#include <sstream>
 
 VariableStateManager::VariableStateManager()
 {
@@ -7,7 +9,7 @@ VariableStateManager::VariableStateManager()
 
 void VariableStateManager::pushState()
 {
-    std::map<std::string, int> newState;
+    std::map<std::string, XhaustValue> newState;
     states.push_back(newState);
 }
 
@@ -16,7 +18,7 @@ void VariableStateManager::popState()
     states.pop_back();
 }
 
-void VariableStateManager::setVariable(std::string key, int value)
+void VariableStateManager::setVariable(std::string key, XhaustValue value)
 {
     states[states.size()-1][key] = value;
 }
@@ -26,9 +28,254 @@ bool VariableStateManager::hasVariable(std::string key)
     return states[states.size()-1].count(key) > 0;
 }
 
-int VariableStateManager::getVariable(std::string key)
+XhaustValue VariableStateManager::getVariable(std::string key)
 {
     return states[states.size()-1][key];
+}
+
+XhaustValueTypes XhaustValue::getType() const
+{
+    return type;
+}
+
+std::string XhaustValue::toString() const
+{
+    XhaustValueTypes type = getType();
+    if (type == XhaustValueTypes::string)
+    {
+        return valueString;
+    }
+    else if (type == XhaustValueTypes::number)
+    {
+        return std::to_string(valueNumber);
+    }
+    else if (type == XhaustValueTypes::boolean)
+    {
+        return valueBoolean ? "true" : "false";
+    }
+    else if (type == XhaustValueTypes::object)
+    {
+        uintptr_t uptr = reinterpret_cast<uintptr_t>(valueObject);
+        int ptr = static_cast<int>(uptr);
+        std::stringstream ss;
+        ss << std::hex << ptr;
+        return ss.str();
+    }
+    else if (type == XhaustValueTypes::nulltype)
+    {
+        return "null";
+    }
+}
+
+XhaustValue XhaustValue::operator==(const XhaustValue &other) const
+{
+    if (other.getType() == XhaustValueTypes::string || getType() == XhaustValueTypes::string)
+    {
+        return XhaustValue::fromBoolean(toString() == other.toString());
+    }
+    else
+    {
+        return XhaustValue::fromBoolean(getNumberValue() == other.getNumberValue());
+    }
+}
+
+XhaustValue XhaustValue::operator>=(const XhaustValue &other) const
+{
+    if (other.getType() == XhaustValueTypes::string || getType() == XhaustValueTypes::string)
+    {
+        return XhaustValue::fromNull();
+    }
+    else
+    {
+        return XhaustValue::fromBoolean(getNumberValue() >= other.getNumberValue());
+    }
+}
+
+XhaustValue XhaustValue::operator<=(const XhaustValue &other) const
+{
+    if (other.getType() == XhaustValueTypes::string || getType() == XhaustValueTypes::string)
+    {
+        return XhaustValue::fromNull();
+    }
+    else
+    {
+        return XhaustValue::fromBoolean(other.getNumberValue() <= getNumberValue());
+    }
+}
+
+XhaustValue XhaustValue::operator>(const XhaustValue &other) const
+{
+    if (other.getType() == XhaustValueTypes::string || getType() == XhaustValueTypes::string)
+    {
+        return XhaustValue::fromNull();
+    }
+    else
+    {
+        return XhaustValue::fromBoolean(getNumberValue() > other.getNumberValue());
+    }
+}
+
+XhaustValue XhaustValue::operator<(const XhaustValue &other) const
+{
+    if (other.getType() == XhaustValueTypes::string || getType() == XhaustValueTypes::string)
+    {
+        return XhaustValue::fromNull();
+    }
+    else
+    {
+        return XhaustValue::fromBoolean(getNumberValue() < other.getNumberValue());
+    }
+}
+
+XhaustValue XhaustValue::operator+(const XhaustValue &other) const
+{
+    if (other.getType() == XhaustValueTypes::string || getType() == XhaustValueTypes::string)
+    {
+        std::string left = toString();
+        std::string right = other.toString();
+        return XhaustValue::fromString(left + right);
+    }
+    else if (other.getType() == XhaustValueTypes::number || getType() == XhaustValueTypes::number
+        || other.getType() == XhaustValueTypes::object || getType() == XhaustValueTypes::object
+        || other.getType() == XhaustValueTypes::nulltype || getType() == XhaustValueTypes::nulltype)
+    {
+        double left = getNumberValue();
+        double right = other.getNumberValue();
+        return XhaustValue::fromNumber(left + right);
+    }
+    else if (other.getType() == XhaustValueTypes::boolean || getType() == XhaustValueTypes::boolean)
+    {
+        return XhaustValue::fromBoolean(valueBoolean && other.valueBoolean);
+    }
+}
+
+XhaustValue XhaustValue::operator-(const XhaustValue &other) const
+{
+    if (getType() == XhaustValueTypes::string || other.getType() == XhaustValueTypes::string)
+    {
+        return XhaustValue::fromNumber(valueString.compare(other.valueString));
+    }
+    else if ((other.getType() == XhaustValueTypes::number || other.getType() == XhaustValueTypes::nulltype) && (getType() == XhaustValueTypes::number || getType() == XhaustValueTypes::nulltype))
+    {
+        return XhaustValue::fromNumber(getNumberValue() - other.getNumberValue());
+    }
+    else
+    {
+        return XhaustValue::fromNull();
+    }
+}
+
+XhaustValue XhaustValue::operator*(const XhaustValue &other) const
+{
+    if ((other.getType() == XhaustValueTypes::number || other.getType() == XhaustValueTypes::nulltype) && (getType() == XhaustValueTypes::number || getType() == XhaustValueTypes::nulltype))
+    {
+        return XhaustValue::fromNumber(getNumberValue() * other.getNumberValue());
+    }
+    else
+    {
+        return XhaustValue::fromNull();
+    }
+}
+
+XhaustValue XhaustValue::operator/(const XhaustValue &other) const
+{
+    if ((other.getType() == XhaustValueTypes::number || other.getType() == XhaustValueTypes::nulltype) && (getType() == XhaustValueTypes::number || getType() == XhaustValueTypes::nulltype))
+    {
+        return XhaustValue::fromNumber(getNumberValue() / other.getNumberValue());
+    }
+    else
+    {
+        return XhaustValue::fromNull();
+    }
+}
+
+XhaustValue::operator bool() const
+{
+    if (getType() == XhaustValueTypes::boolean)
+    {
+        return valueBoolean;
+    }
+    else if (getType() == XhaustValueTypes::string)
+    {
+        return valueString != "";
+    }
+    else if (getType() == XhaustValueTypes::object)
+    {
+        return valueObject != (void*)0;
+    }
+    else if (getType() == XhaustValueTypes::number)
+    {
+        return valueNumber != 0;
+    }
+    else if (getType() == XhaustValueTypes::nulltype)
+    {
+        return false;
+    }
+}
+
+double XhaustValue::getNumberValue() const
+{
+    if (getType() == XhaustValueTypes::string)
+    {
+        return -1;
+    }
+    else if (getType() == XhaustValueTypes::number)
+    {
+        return valueNumber;
+    }
+    else if (getType() == XhaustValueTypes::boolean)
+    {
+        return valueBoolean ? 1 : 0;
+    }
+    else if (getType() == XhaustValueTypes::object)
+    {
+        uintptr_t uptr = reinterpret_cast<uintptr_t>(valueObject);
+        int ptr = static_cast<int>(uptr);
+        return ptr;
+    }
+    else if (getType() == XhaustValueTypes::nulltype)
+    {
+        return -1;
+    }
+}
+
+XhaustValue XhaustValue::fromNumber(double num)
+{
+    XhaustValue result;
+    result.type = XhaustValueTypes::number;
+    result.valueNumber = num;
+    return result;
+}
+
+XhaustValue XhaustValue::fromNull()
+{
+    XhaustValue result;
+    result.type = XhaustValueTypes::nulltype;
+    return result;
+}
+
+XhaustValue XhaustValue::fromString(std::string str)
+{
+    XhaustValue result;
+    result.type = XhaustValueTypes::string;
+    result.valueString = str;
+    return result;
+}
+
+XhaustValue XhaustValue::fromBoolean(bool val)
+{
+    XhaustValue result;
+    result.type = XhaustValueTypes::boolean;
+    result.valueBoolean = val;
+    return result;
+}
+
+XhaustValue XhaustValue::fromObject(void* obj)
+{
+    XhaustValue result;
+    result.type = XhaustValueTypes::object;
+    result.valueObject = obj;
+    return result;
 }
 
 Interpreter* Interpreter::fromSource(std::string source)
@@ -39,22 +286,23 @@ Interpreter* Interpreter::fromSource(std::string source)
     return new Interpreter(baseNodes);
 }
 
-int Interpreter::evaluateFunction(const TreeNode *functionNode, std::vector<int> args)
+XhaustValue Interpreter::evaluateFunction(const TreeNode *functionNode, std::vector<XhaustValue> args)
 {
 
 }
 
-int Interpreter::conditional(const IfNode *node)
+XhaustValue Interpreter::conditional(const IfNode *node)
 {
-    int result = evaluate(node->condition);
-    if (result != 0)
+    XhaustValue result = evaluate(node->condition);
+    double dblResult = result.getNumberValue();
+    if (dblResult != 0)
         return evaluate(node->body);
     return result;
 }
 
-int Interpreter::evalBlock(const BlockNode *node)
+XhaustValue Interpreter::evalBlock(const BlockNode *node)
 {
-    int result = 0;
+    XhaustValue result = XhaustValue::fromNull();
     for (TreeNode *n : node->body)
     {
         result = evaluate(n);
@@ -62,19 +310,19 @@ int Interpreter::evalBlock(const BlockNode *node)
     return result;
 }
 
-int Interpreter::funcCall(const FunctionCallNode *node)
+XhaustValue Interpreter::funcCall(const FunctionCallNode *node)
 {
     if (node->functionName == "Out")
     {
         for (int i = 0; i < node->functionArguments.size(); ++i)
         {
-            int result = evaluate(node->functionArguments[i]);
+            XhaustValue result = evaluate(node->functionArguments[i]);
             if (i > 0)
                 std::cout << ", ";
-            std::cout << result;
+            std::cout << result.toString();
         }
         std::cout << std::endl;
-        return 1;
+        return XhaustValue::fromBoolean(true);
     }
     else
     {
@@ -82,37 +330,37 @@ int Interpreter::funcCall(const FunctionCallNode *node)
     }
 }
 
-int Interpreter::resolve(const ValueNode *node)
+XhaustValue Interpreter::resolve(const ValueNode *node)
 {
     if (!node->isConstant)
     {
         if (variableManager.hasVariable(node->value))
             return variableManager.getVariable(node->value);
         else
-            return 0;
+            return XhaustValue::fromNull();
     }
     else
     {
-        return std::stoi(node->value);
+        return XhaustValue::fromNumber(std::stod(node->value));
     }
 }
 
-int Interpreter::performOperator(const OperatorNode *node)
+XhaustValue Interpreter::performOperator(const OperatorNode *node)
 {
-    int left = evaluate(node->lhs);
-    int right = evaluate(node->rhs);
+    XhaustValue left = evaluate(node->lhs);
+    XhaustValue right = evaluate(node->rhs);
     if (node->op == "==")
-        return left == right ? 1 : 0;
+        return left == right ? XhaustValue::fromBoolean(true) : XhaustValue::fromBoolean(false);
     else if (node->op == ">=")
-        return left >= right ? 1 : 0;
+        return left >= right ? XhaustValue::fromBoolean(true) : XhaustValue::fromBoolean(false);
     else if (node->op == "<=")
-        return left <= right ? 1 : 0;
+        return left <= right ? XhaustValue::fromBoolean(true) : XhaustValue::fromBoolean(false);
     else if (node->op == "!=")
-        return left != right ? 1 : 0;
+        return left != right ? XhaustValue::fromBoolean(true) : XhaustValue::fromBoolean(false);
     else if (node->op == ">")
-        return left > right ? 1 : 0;
+        return left > right ? XhaustValue::fromBoolean(true) : XhaustValue::fromBoolean(false);
     else if (node->op == "<")
-        return left < right ? 1 : 0;
+        return left < right ? XhaustValue::fromBoolean(true) : XhaustValue::fromBoolean(false);
     else if (node->op == "-")
         return left - right;
     else if (node->op == "+")
@@ -131,7 +379,7 @@ int Interpreter::performOperator(const OperatorNode *node)
     }
 }
 
-int Interpreter::evaluate(const TreeNode *node)
+XhaustValue Interpreter::evaluate(const TreeNode *node)
 {
     if (node->type == TN_VALUE)
         return resolve(dynamic_cast<const ValueNode*>(node));
@@ -158,9 +406,9 @@ Interpreter::~Interpreter()
         delete bn;
 }
 
-int Interpreter::start()
+XhaustValue Interpreter::start()
 {
-    int result;
+    XhaustValue result = XhaustValue::fromNull();
     for (TreeNode* baseNode : baseNodes)
     {
         result = evaluate(baseNode);
