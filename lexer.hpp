@@ -9,17 +9,18 @@
 #define TK_OPERATOR 2
 #define TK_KEYWORD 3
 #define TK_NUMBER 4
+#define TK_STRING 5
 
 class SyntaxException : public std::exception
 {
 public:
     int line;
     std::string msg;
-    
+
     SyntaxException(int line, std::string msg) : line(line), msg(msg) { }
     virtual ~SyntaxException() throw() = default;
-    
-    virtual const char* what() const throw() 
+
+    virtual const char* what() const throw()
     {
         return msg.c_str();
     }

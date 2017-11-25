@@ -53,6 +53,23 @@ class Lexer {
         --marker;
     }
 
+    void readString(int &marker)
+    {
+        std::string str = "";
+        str += source[marker++];
+        while (marker < source.length())
+        {
+            str += source[marker];
+            if (source[marker] == '"' && source[marker-1] != '\\')
+            {
+                break;
+            }
+            marker++;
+        }
+        marker++;
+        addToken(str, TK_STRING);
+    }
+
     void readOperator(int& marker)
     {
         bool added = false;
@@ -66,7 +83,8 @@ class Lexer {
         }
         if (!added)
         {
-            throw new SyntaxException(-1, std::string("Unknown symbol ") + source[marker]);
+            int code = source[marker];
+            throw new SyntaxException(-1, std::string("Unknown symbol ") + source[marker] + "(" + std::to_string(code) + ")");
         }
     }
 
@@ -82,7 +100,7 @@ class Lexer {
 
     bool isWhitespace(char c)
     {
-        return c == ' ' || c == '\n' || c == '\r';
+        return c == ' ' || c == '\n' || c == '\r' || c == '\t';
     }
 
     void read()
@@ -91,7 +109,11 @@ class Lexer {
         {
             char c = source[marker];
 
-            if (isLetter(c))
+            if (c == '"')
+            {
+                readString(marker);
+            }
+            else if (isLetter(c))
             {
                 readName(marker);
             }

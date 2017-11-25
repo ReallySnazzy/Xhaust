@@ -1,6 +1,7 @@
 #include "interpreter.hpp"
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 
 VariableStateManager::VariableStateManager()
 {
@@ -47,7 +48,9 @@ std::string XhaustValue::toString() const
     }
     else if (type == XhaustValueTypes::number)
     {
-        return std::to_string(valueNumber);
+        std::string res = std::to_string(valueNumber);
+        res.erase(std::min(res.find_last_not_of('0') + 2, res.length() - 1), std::string::npos);
+        return res;
     }
     else if (type == XhaustValueTypes::boolean)
     {
@@ -341,7 +344,14 @@ XhaustValue Interpreter::resolve(const ValueNode *node)
     }
     else
     {
-        return XhaustValue::fromNumber(std::stod(node->value));
+        if (node->value[0] == '"')
+        {
+            return XhaustValue::fromString(node->value.substr(1, node->value.length()-2));
+        }
+        else
+        {
+            return XhaustValue::fromNumber(std::stod(node->value));
+        }
     }
 }
 

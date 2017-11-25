@@ -49,7 +49,7 @@ GroupNode* TreeGenerator::parseGroup()
 TreeNode* TreeGenerator::parseFactor()
 {
     Token token = tokens[marker];
-    if (token.type != TK_IDENTIFIER && token.type != TK_NUMBER)
+    if (token.type != TK_IDENTIFIER && token.type != TK_NUMBER && token.type != TK_STRING)
     {
         if (token.type == TK_OPERATOR && token.value == "(")
             return parseGroup();
@@ -59,7 +59,7 @@ TreeNode* TreeGenerator::parseFactor()
             throw new SyntaxException(-1, "Expected number or identifier, got " + token.value);
     }
     marker++;
-    return new ValueNode(token.value, token.type == TK_NUMBER);
+    return new ValueNode(token.value, token.type == TK_NUMBER || token.type == TK_STRING);
 }
 
 TreeNode* TreeGenerator::parseMultiplication()
