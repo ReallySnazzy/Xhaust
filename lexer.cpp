@@ -53,6 +53,12 @@ class Lexer {
         --marker;
     }
 
+    void skipComment(int &marker)
+    {
+        while (marker < source.length() && source[marker] != '\n' && source[marker] != '\r')
+            marker++;
+    }
+
     void readString(int &marker)
     {
         std::string str = "";
@@ -124,6 +130,10 @@ class Lexer {
             else if (isWhitespace(c))
             {
                 skipWhitespace(marker);
+            }
+            else if (c == '/' && marker+1 < len && source[marker+1] == '/')
+            {
+                skipComment(marker);
             }
             else
             {

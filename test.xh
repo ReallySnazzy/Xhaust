@@ -1,10 +1,12 @@
+// Comments are now supported
 lol = 5
 if (lol == 7-2)
 {
     lol=10
     xd=20
     do Out(lol, xd)
-    do Out("Hel" + "lo, world!", "String concatenation works!")
+    // String concatenation now supported
+    do Out("Hel" + "lo, world!")
 }
 if (lol == 9)
 {
