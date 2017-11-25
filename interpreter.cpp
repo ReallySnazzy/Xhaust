@@ -315,30 +315,15 @@ XhaustValue Interpreter::evalBlock(const BlockNode *node)
 
 XhaustValue Interpreter::funcCall(const FunctionCallNode *node)
 {
-    if (node->functionName == "Out")
+    std::vector<XhaustValue> arguments;
+    for (int i = 0; i < node->functionArguments.size(); ++i)
     {
-        for (int i = 0; i < node->functionArguments.size(); ++i)
-        {
-            XhaustValue result = evaluate(node->functionArguments[i]);
-            if (i > 0)
-                std::cout << ", ";
-            std::cout << result.toString();
-        }
-        std::cout << std::endl;
-        return XhaustValue::fromBoolean(true);
+        XhaustValue result = evaluate(node->functionArguments[i]);
+        arguments.push_back(result);
     }
-    else if (node->functionName == "In")
+    if (StandardFunctions::getInstance().hasFunction(node->functionName))
     {
-        for (int i = 0; i < node->functionArguments.size(); ++i)
-        {
-            XhaustValue result = evaluate(node->functionArguments[i]);
-            if (i > 0)
-                std::cout << ", ";
-            std::cout << result.toString();
-        }
-        std::string line;
-        std::getline(std::cin, line);
-        return XhaustValue::fromString(line);
+        return StandardFunctions::getInstance().functionCall(node->functionName, arguments);
     }
     else
     {

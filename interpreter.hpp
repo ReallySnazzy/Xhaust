@@ -3,6 +3,7 @@
 
 #include "treegen.hpp"
 #include <map>
+#include <functional>
 #include <cstdint>
 
 enum class XhaustValueTypes
@@ -51,6 +52,7 @@ public:
 
     std::string toString() const;
     double getNumberValue() const;
+    void *getObjectValue() const {return valueObject;}
 };
 
 // All variables are stored internally as integers.
@@ -94,6 +96,20 @@ public:
     XhaustValue evaluateFunction(const TreeNode *functionNode, std::vector<XhaustValue> args);
     XhaustValue performOperator(const OperatorNode *opNode);
     XhaustValue start();
+};
+
+class StandardFunctions
+{
+private:
+    static StandardFunctions instance;
+    std::map<std::string, std::function<XhaustValue(std::vector<XhaustValue>)>> callbacks;
+    StandardFunctions();
+
+public:
+    virtual ~StandardFunctions() {};
+    static StandardFunctions &getInstance();
+    bool hasFunction(std::string name);
+    XhaustValue functionCall(std::string name, std::vector<XhaustValue> args);
 };
 
 #endif // interpreter_hpp

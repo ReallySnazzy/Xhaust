@@ -1,18 +1,25 @@
-// Comments are now supported
-lol = 5
-if (lol == 7-2)
+// Conditional statements
+x = 9-2
+if (x == 5+2)
 {
-    lol=10
-    xd=20
-    do Out(lol, xd)
-    // String concatenation now supported
-    do Out("Hel" + "lo, world!")
-    // Now supporting console input
-    name = do In("What's your name? ")
-    do Out("Hello, " + name + "!")
-    do Out(5*5*5)
+    do Println("Condition passed!")
 }
-if (lol == 9)
+if (x == 5-2)
 {
-    do Out("This code won't happen...")
+    do Println("Condition failed.")
 }
+
+// Console input and str concatenation
+name = do Readln("What's your name? ")
+do Println("Enter your age: ")
+age = do Readln()
+do Println("Your name is " + name + ", and your age is " + age)
+
+// Various functions
+do Println((do ToNumber("5000")) + 1)
+do Println(do Type(a))
+
+// Show line 2 of this file
+lines = do LoadLines("test.xh")
+lineTwo = do ListGet(lines, 1)
+do Println("Line two", lineTwo)

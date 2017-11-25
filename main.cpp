@@ -7,7 +7,7 @@ void runCode(std::string source)
     try
     {
         Interpreter *i = Interpreter::fromSource(source);
-        std::cout << "Ran: " << source << std::endl;
+        std::cout << "Running: " << std::endl << source << std::endl;
         std::cout << "============================================================" << std::endl;
         XhaustValue result = i->start();
         delete i;
