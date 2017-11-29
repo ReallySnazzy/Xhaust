@@ -1,11 +1,9 @@
 #compilation files
-*.o
-*.exe
+build/*
 
 #ide settings
 .vscode
 
 #misc
 err.txt
-.gitignore
 .DS_Store
