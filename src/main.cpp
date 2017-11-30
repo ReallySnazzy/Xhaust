@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "interpreter.hpp"
+#include <unistd.h>
 
 void runCode(std::string source)
 {
@@ -21,20 +22,24 @@ void runCode(std::string source)
     }
 }
 
+std::string getDirectory(std::string filename)
+{
+    return filename.substr(0, filename.find_last_of("\\/"));
+}
+
 void runFile(std::string filename)
 {
     std::fstream sourceFile(filename);
     std::string line;
     std::string source;
 
-    std::ifstream in;
-    in.open(filename);
-
-    if (!in)
+    if (!sourceFile)
     {
         std::cout << "Error: File not found. It might be inaccessible. Check privileges." << std::endl;
         exit(1);
     }
+
+    chdir(getDirectory(filename).c_str());
 
     while (sourceFile && std::getline(sourceFile, line))
     {
