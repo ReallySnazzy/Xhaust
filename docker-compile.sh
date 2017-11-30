@@ -1,3 +1,4 @@
+#this is all stupid
 
 # does some magic, then runs the batch file in an OSX friendly way
 
