@@ -41,7 +41,7 @@ XhaustValueTypes XhaustValue::getType() const
 
 std::string XhaustValue::toString() const
 {
-    XhaustValueTypes type = getType();
+    XflaustValueTypes type = getType();
     if (type == XhaustValueTypes::string)
     {
         return valueString;
