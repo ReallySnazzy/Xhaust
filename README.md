@@ -1,7 +1,9 @@
 # Xhaust 
 [![Build Status](https://travis-ci.org/SamyBencherif/Xhaust.svg?branch=master)](https://travis-ci.org/SamyBencherif/Xhaust)
 
-## Keywords
+## Introduction
+
+### Keywords
 <pre><code><span style="color:gold">in</span>("&lt;prompt&gt;")                             <span style="color:gray;float:right">Take string input</span>
 <span style="color:orchid">nin</span>("&lt;prompt&gt;")                            <span style="color:gray;float:right">Take numeric input</span>
 <span style="color:orange">exhaust</span> &lt;value&gt; { &lt;CODE&gt; }                 <span style="color:gray;float:right">Loop &lt;CODE&gt;, deplete &lt;value&gt;</span>
@@ -10,7 +12,7 @@
 <span style="color:aquamarine">head</span>(&lt;list&gt;)                               <span style="color:gray;float:right">Get head of list</span>
 <span style="color:tomato">tail</span>(&lt;list&gt;)                               <span style="color:gray;float:right">Get tail of list</span>
 </code></pre>
-## Examples
+### Examples
 
 Multiply x and y:
 <pre><code><span style="color:gray">//Take numeric input</span>
@@ -103,3 +105,8 @@ r = <>
   s = 0::s
 }
 </code></pre>
+
+## Contributors
+
+| [<img src="https://avatars1.githubusercontent.com/u/4676022" width="100px;"/><br /><sub>DrowsySaturn</sub>](https://github.com/DrowsySaturn)<br /> | [<img src="https://avatars1.githubusercontent.com/u/10871454" width="100px;"/><br /><sub>SamyBencherif</sub>](https://github.com/SamyBencherif)<br />  |
+| :---: | :---: |
