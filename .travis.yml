@@ -1,2 +1,2 @@
 language: cpp
-script: ./compile.bat
+script: ./compile.sh
