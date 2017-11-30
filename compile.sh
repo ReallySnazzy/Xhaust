@@ -1,11 +1,15 @@
 
 # does some magic, then runs the batch file in an OSX friendly way
 
+if [ "$1" != "run" ]; then
 docker run --rm -it -v "$PWD":/usr/src/xhaust -w /usr/src/xhaust gcc:4.9 sh ./compile.bat
+mv build/xhaust.exe build/xhaust
+else
+docker run --rm -it -v "$PWD":/usr/src/xhaust -w /usr/src/xhaust gcc:4.9 ./build/xhaust $2
+fi
 
-mv build/lang.exe build/lang
-
-docker run --rm -it -v "$PWD":/usr/src/xhaust -w /usr/src/xhaust gcc:4.9 ./build/lang
+# it's hacky, but run `./compile.sh` to compile.
+# and `.complile.sh run` to run.
 
 # FAQ
 
