@@ -1,5 +1,5 @@
 #compilation files
-build/*.o
+build/*
 
 #ide settings
 .vscode
