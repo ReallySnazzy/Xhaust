@@ -1,4 +1,5 @@
-# Xhaust [![Build Status](https://travis-ci.org/SamyBencherif/Xhaust.svg?branch=master)](https://travis-ci.org/SamyBencherif/Xhaust)
+# Xhaust [![Build Status]
+(https://travis-ci.org/SamyBencherif/Xhaust.svg?branch=master)](https://travis-ci.org/SamyBencherif/Xhaust)
 
 ## Keywords
 <pre><code><span style="color:gold">in</span>("&lt;prompt&gt;")                             <span style="color:gray;float:right">Take string input</span>
