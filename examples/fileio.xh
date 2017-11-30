@@ -1,0 +1,4 @@
+// Show line 2 of this file
+lines = do LoadLines("fileio.xh")
+lineTwo = do ListGet(lines, 1)
+do Println("Line two", lineTwo)

@@ -18,8 +18,3 @@ do Println("Your name is " + name + ", and your age is " + age)
 // Various functions
 do Println((do ToNumber("5000")) + 1)
 do Println(do Type(a))
-
-// Show line 2 of this file
-lines = do LoadLines("test.xh")
-lineTwo = do ListGet(lines, 1)
-do Println("Line two", lineTwo)
