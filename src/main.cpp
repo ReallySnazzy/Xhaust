@@ -21,11 +21,21 @@ void runCode(std::string source)
     }
 }
 
-void runFile(std::string fileName)
+void runFile(std::string filename)
 {
-    std::fstream sourceFile(fileName);
+    std::fstream sourceFile(filename);
     std::string line;
     std::string source;
+
+    std::ifstream in;
+    in.open(filename);
+
+    if (!in)
+    {
+        std::cout << "Error: File not found. It might be inaccessible. Check privileges." << std::endl;
+        exit(1);
+    }
+
     while (sourceFile && std::getline(sourceFile, line))
     {
         source += line + "\n";
@@ -42,6 +52,6 @@ int main(int argc, char **argv)
     }
     else
     {
-        runFile("test.xh");
+        std::cout << "Usage: xhaust filename.xh" << std::endl;
     }
 }

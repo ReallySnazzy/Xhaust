@@ -6,13 +6,18 @@ StandardFunctions StandardFunctions::instance;
 XhaustValue func_Println(std::vector<XhaustValue> args)
 {
     int count = args.size();
+    std::string out = "";
     for (int i = 0; i < count; i++)
     {
         if (i != 0)
-            std::cout << ", ";
-        std::cout << args[i].toString();
+            out += ", ";
+        out += args[i].toString();
     }
-    std::cout << std::endl;
+     out += "\n";
+     std::cout << out;
+
+    return XhaustValue().fromString(out);
+
 }
 
 XhaustValue func_Readln(std::vector<XhaustValue> args)

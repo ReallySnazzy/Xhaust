@@ -173,7 +173,7 @@ TreeNode* TreeGenerator::parseStatement()
 
 TreeNode* TreeGenerator::parseExpression()
 {
-    parseAssignment();
+    return parseAssignment();
 }
 
 std::vector<TreeNode*> TreeGenerator::buildTree()

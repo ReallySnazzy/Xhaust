@@ -68,6 +68,9 @@ std::string XhaustValue::toString() const
     {
         return "null";
     }
+
+    //return required for compilation in some flavours of OSX :o
+    return NULL;
 }
 
 XhaustValue XhaustValue::operator==(const XhaustValue &other) const
@@ -146,7 +149,7 @@ XhaustValue XhaustValue::operator+(const XhaustValue &other) const
         double right = other.getNumberValue();
         return XhaustValue::fromNumber(left + right);
     }
-    else if (other.getType() == XhaustValueTypes::boolean || getType() == XhaustValueTypes::boolean)
+    else //if (other.getType() == XhaustValueTypes::boolean || getType() == XhaustValueTypes::boolean)
     {
         return XhaustValue::fromBoolean(valueBoolean && other.valueBoolean);
     }
@@ -210,7 +213,7 @@ XhaustValue::operator bool() const
     {
         return valueNumber != 0;
     }
-    else if (getType() == XhaustValueTypes::nulltype)
+    else //if (getType() == XhaustValueTypes::nulltype)
     {
         return false;
     }
@@ -236,7 +239,7 @@ double XhaustValue::getNumberValue() const
         int ptr = static_cast<int>(uptr);
         return ptr;
     }
-    else if (getType() == XhaustValueTypes::nulltype)
+    else //if (getType() == XhaustValueTypes::nulltype)
     {
         return -1;
     }
@@ -289,10 +292,8 @@ Interpreter* Interpreter::fromSource(std::string source)
     return new Interpreter(baseNodes);
 }
 
-XhaustValue Interpreter::evaluateFunction(const TreeNode *functionNode, std::vector<XhaustValue> args)
-{
 
-}
+//XhaustValue Interpreter::evaluateFunction(const TreeNode *functionNode, std::vector<XhaustValue> args){}
 
 XhaustValue Interpreter::conditional(const IfNode *node)
 {
@@ -377,7 +378,7 @@ XhaustValue Interpreter::performOperator(const OperatorNode *node)
         return left*right;
     else if (node->op == "/")
         return left/right;
-    else if (node->op == "=")
+    else //if (node->op == "=")
     {
         if (node->lhs->type != TN_VALUE || dynamic_cast<const ValueNode*>(node->lhs)->isConstant)
             throw new std::exception();
@@ -399,7 +400,7 @@ XhaustValue Interpreter::evaluate(const TreeNode *node)
         return evalBlock(dynamic_cast<const BlockNode*>(node));
     else if (node->type == TN_FUNC_CALL)
         return funcCall(dynamic_cast<const FunctionCallNode*>(node));
-    else if (node->type == TN_OPERATOR)
+    else //if (node->type == TN_OPERATOR)
         return performOperator(dynamic_cast<const OperatorNode*>(node));
 }
 
