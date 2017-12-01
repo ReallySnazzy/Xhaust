@@ -2,10 +2,10 @@
 #include <fstream>
 #include "interpreter.hpp"
 
-#if defined(__WIN32) || defined(__WIN64)
+#if defined(_WIN32) || defined(_WIN64)
     // Hack to add chdir to windows
     #include <windows.h>
-    int chdir(char *dir)
+    int chdir(const char *dir)
     {
         if (SetCurrentDirectory(dir))
             return 0;

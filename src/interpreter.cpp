@@ -300,8 +300,7 @@ Interpreter* Interpreter::fromSource(std::string source)
 XhaustValue Interpreter::conditional(const IfNode *node)
 {
     XhaustValue result = evaluate(node->condition);
-    double dblResult = result.getNumberValue();
-    if (dblResult != 0)
+    if (result.getType() == XhaustValueTypes::boolean && result)
         return evaluate(node->body);
     return result;
 }
