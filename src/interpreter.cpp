@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <sstream>
 #include <cmath>
+#include <algorithm>
 
 VariableStateManager::VariableStateManager()
 {
@@ -49,6 +50,7 @@ std::string XhaustValue::toString() const
     else if (type == XhaustValueTypes::number)
     {
         std::string res = std::to_string(valueNumber);
+
         res.erase(std::min(res.find_last_not_of('0') + 2, res.length() - 1), std::string::npos);
         return res;
     }
