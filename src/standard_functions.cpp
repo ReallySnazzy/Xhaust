@@ -197,6 +197,30 @@ XhaustValue func_ListFind(std::vector<XhaustValue> args)
     return XhaustValue::fromNull();
 }
 
+XhaustValue func_StrLen(std::vector<XhaustValue> args)
+{
+    if (args.size() < 1)
+        return XhaustValue::fromNull();
+    return XhaustValue::fromNumber(args[0].toString().length());
+}
+
+XhaustValue func_StrGet(std::vector<XhaustValue> args)
+{
+    if (args.size() < 2)
+        return XhaustValue::fromNull();
+    return XhaustValue::fromString(std::string() + args[0].toString()[(int)(args[1].getNumberValue()+0.5)]);
+}
+
+XhaustValue func_StrSub(std::vector<XhaustValue> args)
+{
+    if (args.size() < 3)
+        return XhaustValue::fromNull();
+    int start = (int)(args[1].getNumberValue()+0.5);
+    int finish = (int)(args[2].getNumberValue()+0.5);
+    int len = (finish-start);
+    return XhaustValue::fromString(args[0].toString().substr(start, len));
+}
+
 StandardFunctions::StandardFunctions()
 {
     callbacks["Println"] = func_Println;
@@ -213,6 +237,9 @@ StandardFunctions::StandardFunctions()
     callbacks["ListGet"] = func_ListGet;
     callbacks["ListSize"] = func_ListSize;
     callbacks["ListFind"] = func_ListFind;
+    callbacks["StrLen"] = func_StrLen;
+    callbacks["StrGet"] = func_StrGet;
+    callbacks["StrSub"] = func_StrSub;
 }
 
 StandardFunctions &StandardFunctions::getInstance()

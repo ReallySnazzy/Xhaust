@@ -1,0 +1,4 @@
+test = "Hello, world"
+do Println(do StrLen(test))
+do Println(do StrSub(test, 7, do StrLen(test)))
+do Println(do StrGet(test, 5))
