@@ -1,0 +1,15 @@
+bottles = 100
+
+exhaust bottles
+{
+    if (bottles > 1)
+    {
+        bottlesLessOne = bottles - 1
+        bottlesString = do StrSub(do ToString(bottlesLessOne), 0, (do StrLen(bottlesLessOne)) - 2)
+        do Println(bottlesString + " bottles of beer on the wall. Take 1 down pass it around")
+    }
+    if (bottles == 1)
+    {
+        do Println("No more bottles of beer on the wall")
+    }
+}
