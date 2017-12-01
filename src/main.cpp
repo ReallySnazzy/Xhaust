@@ -1,7 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include "interpreter.hpp"
-#include <unistd.h>
+
+#if defined(__WIN32) || defined(__WIN64)
+    // Hack to add chdir to windows
+    #include <windows.h>
+    int chdir(char *dir)
+    {
+        if (SetCurrentDirectory(dir))
+            return 0;
+        return -1;
+    }
+#else
+    #include <unistd.h>
+#endif
 
 void runCode(std::string source)
 {
