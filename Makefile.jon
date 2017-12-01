@@ -4,19 +4,19 @@ CC = g++
 
 all: executable
 
-interpreter.o:
+interpreter.o: src/interpreter.cpp src/*.hpp
 	$(CC) -c src/interpreter.cpp
 
-lexer.o:
+lexer.o: src/lexer.cpp src/*.hpp
 	$(CC) -c src/lexer.cpp
 
-main.o:
+main.o: src/main.cpp src/*.hpp
 	$(CC) -c src/main.cpp
 
-standard_functions.o:
+standard_functions.o: src/standard_functions.cpp src/*.hpp
 	$(CC) -c src/standard_functions.cpp
 
-treegen.o:
+treegen.o: src/treegen.cpp src/*.hpp
 	$(CC) -c src/treegen.cpp
 
 executable: interpreter.o lexer.o main.o standard_functions.o treegen.o
