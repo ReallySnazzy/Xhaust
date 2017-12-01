@@ -1,0 +1,10 @@
+exhaust 10
+{
+    do Println("Hi!")
+}
+
+x = 5
+exhaust x
+{
+    do Println(x)
+}

@@ -14,6 +14,7 @@
 #define TN_OPERATOR 3
 #define TN_BLOCK 4
 #define TN_IF 5
+#define TN_EXHAUST 6
 
 class TreeNode
 {
@@ -102,6 +103,36 @@ public:
     }
 };
 
+class ExhaustNode : public TreeNode
+{
+public:
+    const TreeNode *condition;
+    const TreeNode *body;
+    const bool usesVariable;
+
+    ExhaustNode(TreeNode *condition, TreeNode *body, bool usesVariable) : condition(condition), body(body), usesVariable(usesVariable)
+    {
+        type = TN_EXHAUST;
+    }
+
+    ~ExhaustNode()
+    {
+        delete condition;
+        delete body;
+    }
+
+    virtual void print(int level) const
+    {
+        for (int i = 0; i < level; i++)
+        {
+            std::cout << "  ";
+        }
+        std::cout << "Exhaust" << std::endl;
+        condition->print(level+1);
+        body->print(level+1);
+    }
+};
+
 class IfNode : public TreeNode
 {
 public:
@@ -167,6 +198,7 @@ public:
     FunctionCallNode* parseFunctionCall();
     GroupNode* parseGroup();
     TreeNode* parseExpression();
+    TreeNode *parseExhaust();
     TreeNode* parseMultiplication();
     TreeNode* parseAddition();
     TreeNode* parseAssignment();

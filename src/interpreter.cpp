@@ -389,6 +389,36 @@ XhaustValue Interpreter::performOperator(const OperatorNode *node)
     }
 }
 
+XhaustValue Interpreter::exhaustOperation(const ExhaustNode *node)
+{
+    if (node->usesVariable)
+    {
+        std::string variableName = reinterpret_cast<const ValueNode*>(node->condition)->value;
+        XhaustValue variable = variableManager.getVariable(variableName);
+        XhaustValue result;
+        while (variableManager.getVariable(variableName).getNumberValue() > 0)
+        {
+            result = evaluate(node->body);
+            int counter = (int)(variableManager.getVariable(variableName).getNumberValue()+0.5);
+            counter--;
+            variableManager.setVariable(variableName, XhaustValue::fromNumber(counter));
+        }
+        return result;
+    }
+    else
+    {
+        XhaustValue val = evaluate(node->condition);
+        int counter = (int)val.getNumberValue();
+        XhaustValue result;
+        while (counter > 0)
+        {
+            result = evaluate(node->body);
+            counter--;
+        }
+        return result;
+    }
+}
+
 XhaustValue Interpreter::evaluate(const TreeNode *node)
 {
     if (node->type == TN_VALUE)
@@ -401,6 +431,8 @@ XhaustValue Interpreter::evaluate(const TreeNode *node)
         return evalBlock(dynamic_cast<const BlockNode*>(node));
     else if (node->type == TN_FUNC_CALL)
         return funcCall(dynamic_cast<const FunctionCallNode*>(node));
+    else if (node->type == TN_EXHAUST)
+        return exhaustOperation(dynamic_cast<const ExhaustNode*>(node));
     else //if (node->type == TN_OPERATOR)
         return performOperator(dynamic_cast<const OperatorNode*>(node));
 }

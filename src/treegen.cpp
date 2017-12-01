@@ -154,6 +154,18 @@ IfNode* TreeGenerator::parseIf()
     return new IfNode(condition, block);
 }
 
+TreeNode* TreeGenerator::parseExhaust()
+{
+    if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "exhaust")
+        ++marker;
+    else
+        throw new SyntaxException(-1, "exhaust expected");
+    TreeNode *condition = parseExpression();
+    bool usesVariable = (condition->type == TN_VALUE && !reinterpret_cast<ValueNode*>(condition)->isConstant);
+    TreeNode *block = parseBlock();
+    return new ExhaustNode(condition, block, usesVariable);
+}
+
 TreeNode* TreeGenerator::parseStatement()
 {
     if (tokens.size() > marker && tokens[marker].type == TK_KEYWORD)
@@ -162,6 +174,8 @@ TreeNode* TreeGenerator::parseStatement()
             return parseIf();
         else if (tokens[marker].value == "do")
             return parseFunctionCall();
+        else if (tokens[marker].value == "exhaust")
+            return parseExhaust();
         else
             throw new SyntaxException(-1, "Unknown keyword: " + tokens[marker].value);
     }

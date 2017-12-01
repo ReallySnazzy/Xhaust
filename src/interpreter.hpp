@@ -95,6 +95,7 @@ public:
     XhaustValue evaluate(const TreeNode *node);
     XhaustValue evaluateFunction(const TreeNode *functionNode, std::vector<XhaustValue> args);
     XhaustValue performOperator(const OperatorNode *opNode);
+    XhaustValue exhaustOperation(const ExhaustNode *ex);
     XhaustValue start();
 };
 
