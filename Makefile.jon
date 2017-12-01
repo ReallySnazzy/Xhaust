@@ -23,4 +23,4 @@ executable: interpreter.o lexer.o main.o standard_functions.o treegen.o
 	$(CC) lexer.o main.o standard_functions.o interpreter.o treegen.o
 
 clean:
-	rm *.o
+	del *.o
