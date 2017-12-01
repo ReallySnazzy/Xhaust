@@ -1,0 +1,9 @@
+do Println("This program writes the contents of a file to stdout.")
+file = do LoadLines(do Readln("What file would you like to read?"))
+index = 0
+exhaust (do ListSize(file))
+{
+    do Println(do ListGet(file, index))
+    index = index + 1
+}
+do ListFree(file)
