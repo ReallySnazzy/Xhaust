@@ -4,8 +4,9 @@
 #include <cstring>
 #include <algorithm>
 
-class Lexer {
-    public:
+class Lexer
+{
+  public:
     std::string source;
     std::vector<Token> tokens;
     int marker = 0;
@@ -18,14 +19,15 @@ class Lexer {
     const std::vector<std::string> OPERATORS = {">=", "<=", "<", "%", ">", "==", "=", "!=", "+", "-", "**", "*", "/", "^", "~", "!", "(", ")", "[", "]", "{", "}", ";", ","};
     const std::vector<std::string> KEYWORDS = {"exhaust", "do", "if"};
 
-    void addToken(std::string value, int type) {
+    void addToken(std::string value, int type)
+    {
         Token t;
         t.value = value;
         t.type = type;
         tokens.push_back(t);
     }
 
-    void readName(int& marker)
+    void readName(int &marker)
     {
         std::string word;
         while (isLetter(source[marker]))
@@ -37,7 +39,7 @@ class Lexer {
         addToken(word, isKeyword ? TK_KEYWORD : TK_IDENTIFIER);
     }
 
-    void readNum(int& marker)
+    void readNum(int &marker)
     {
         std::string num;
         while (isNumber(source[marker]))
@@ -47,9 +49,10 @@ class Lexer {
         addToken(num, TK_NUMBER);
     }
 
-    void skipWhitespace(int& marker)
+    void skipWhitespace(int &marker)
     {
-        while (isWhitespace(source[marker++]));
+        while (isWhitespace(source[marker++]))
+            ;
         --marker;
     }
 
@@ -66,7 +69,9 @@ class Lexer {
         while (marker < source.length())
         {
             str += source[marker];
-            if (source[marker] == '"' && source[marker-1] != '\\')
+
+            //TODO unescape special characters like \\, \n, \"
+            if (source[marker] == '"' && source[marker - 1] != '\\')
             {
                 break;
             }
@@ -76,11 +81,13 @@ class Lexer {
         addToken(str, TK_STRING);
     }
 
-    void readOperator(int& marker)
+    void readOperator(int &marker)
     {
         bool added = false;
-        for (std::string possibleOperator : OPERATORS) {
-            if (source.substr(marker, possibleOperator.length()) == possibleOperator) {
+        for (std::string possibleOperator : OPERATORS)
+        {
+            if (source.substr(marker, possibleOperator.length()) == possibleOperator)
+            {
                 marker += possibleOperator.length();
                 addToken(possibleOperator, TK_OPERATOR);
                 added = true;
@@ -96,12 +103,12 @@ class Lexer {
 
     bool isLetter(char c)
     {
-        return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || c=='_' || c=='$';
+        return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || c == '_' || c == '$';
     }
 
     bool isNumber(char c)
     {
-        return ('0' <= c && c <= '9') || c=='.';
+        return ('0' <= c && c <= '9') || c == '.';
     }
 
     bool isWhitespace(char c)
@@ -111,7 +118,7 @@ class Lexer {
 
     void read()
     {
-        for (int len=source.length();marker<len;)
+        for (int len = source.length(); marker < len;)
         {
             char c = source[marker];
 
@@ -131,7 +138,7 @@ class Lexer {
             {
                 skipWhitespace(marker);
             }
-            else if (c == '/' && marker+1 < len && source[marker+1] == '/')
+            else if (c == '/' && marker + 1 < len && source[marker + 1] == '/')
             {
                 skipComment(marker);
             }
@@ -142,14 +149,16 @@ class Lexer {
         }
     }
 
-    std::vector<Token> getTokens() {
+    std::vector<Token> getTokens()
+    {
         return tokens;
     }
 
     ~Lexer() = default;
 };
 
-std::vector<Token> tokenize(std::string source) {
+std::vector<Token> tokenize(std::string source)
+{
     Lexer l(source);
     l.read();
     return l.getTokens();
