@@ -29,6 +29,7 @@ private:
 
 public:
     XhaustValue() = default;
+    
     XhaustValueTypes getType() const;
 
     static XhaustValue fromBoolean(bool);

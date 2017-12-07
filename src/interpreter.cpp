@@ -4,8 +4,6 @@
 #include <cmath>
 #include <algorithm>
 
-
-
 #pragma region XhaustValue
 XhaustValueTypes XhaustValue::getType() const
 {
