@@ -4,37 +4,9 @@
 #include <cmath>
 #include <algorithm>
 
-VariableStateManager::VariableStateManager()
-{
-    pushState();
-}
 
-void VariableStateManager::pushState()
-{
-    std::map<std::string, XhaustValue> newState;
-    states.push_back(newState);
-}
 
-void VariableStateManager::popState()
-{
-    states.pop_back();
-}
-
-void VariableStateManager::setVariable(std::string key, XhaustValue value)
-{
-    states[states.size()-1][key] = value;
-}
-
-bool VariableStateManager::hasVariable(std::string key)
-{
-    return states[states.size()-1].count(key) > 0;
-}
-
-XhaustValue VariableStateManager::getVariable(std::string key)
-{
-    return states[states.size()-1][key];
-}
-
+#pragma region XhaustValue
 XhaustValueTypes XhaustValue::getType() const
 {
     return type;
@@ -285,7 +257,42 @@ XhaustValue XhaustValue::fromObject(void* obj)
     result.valueObject = obj;
     return result;
 }
+#pragma endregion
 
+#pragma region VariableStateManager
+VariableStateManager::VariableStateManager()
+{
+    pushState();
+}
+
+void VariableStateManager::pushState()
+{
+    std::map<std::string, XhaustValue> newState;
+    states.push_back(newState);
+}
+
+void VariableStateManager::popState()
+{
+    states.pop_back();
+}
+
+void VariableStateManager::setVariable(std::string key, XhaustValue value)
+{
+    states[states.size()-1][key] = value;
+}
+
+bool VariableStateManager::hasVariable(std::string key)
+{
+    return states[states.size()-1].count(key) > 0;
+}
+
+XhaustValue VariableStateManager::getVariable(std::string key)
+{
+    return states[states.size()-1][key];
+}
+#pragma endregion
+
+#pragma region Interpreter
 Interpreter* Interpreter::fromSource(std::string source)
 {
     TreeGenerator *tg = TreeGenerator::fromString(source);
@@ -457,3 +464,4 @@ XhaustValue Interpreter::start()
     }
     return result;
 }
+#pragma endregion
