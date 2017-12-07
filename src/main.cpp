@@ -15,6 +15,8 @@ int chdir(const char *dir)
 #include <unistd.h>
 #endif
 
+//TODO: runCode takes Interpreter obj and exceptions = "run time exception"
+//Exceptions creating Interpreter obj should then be like "compile time exception" eg syntax error
 XhaustValue runCode(std::string source)
 {
     Interpreter *i = Interpreter::fromSource(source);
@@ -58,18 +60,19 @@ void runFile(std::string filepath)
     std::string source = getContentsFromPath(filepath);
     chdir(getDirectory(filepath).c_str());
 
+    std::cout << "Running: " << getFilename(filepath) << std::endl;
+    std::cout << "=============================BEGIN=============================" << std::endl;
     try
     {
-        Interpreter *i = Interpreter::fromSource(source);
-        std::cout << "Running: " << getFilename(filepath) << std::endl;
-        std::cout << "============================================================" << std::endl;
         XhaustValue result = runCode(source);
-        std::cout << "============================================================" << std::endl;
-        std::cout << "The program returned \"" << result.toString() << "\"" << std::endl;
-        std::cout << "============================================================" << std::endl;
+        std::cout << "============================= END =============================" << std::endl;
+        std::cout << "The program returned \"" << result.toString() << "\"" << std::endl
+                  << std::endl;
     }
     catch (std::exception *ex)
     {
+        std::cout << "=============================ERROR=============================" << std::endl;
+
         std::cout << ex->what() << std::endl;
     }
 }
