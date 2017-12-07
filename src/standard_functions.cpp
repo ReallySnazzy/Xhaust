@@ -3,7 +3,7 @@
 
 StandardFunctions StandardFunctions::instance;
 
-XhaustValue func_Println(std::vector<XhaustValue> args)
+XhaustValue Println(std::vector<XhaustValue> args)
 {
     int count = args.size();
     std::string out = "";
@@ -13,14 +13,13 @@ XhaustValue func_Println(std::vector<XhaustValue> args)
             out += ", ";
         out += args[i].toString();
     }
-     out += "\n";
-     std::cout << out;
+    out += "\n";
+    std::cout << out;
 
-    return XhaustValue().fromString(out);
-
+    return XhaustValue::String(out);
 }
 
-XhaustValue func_Readln(std::vector<XhaustValue> args)
+XhaustValue Readln(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
     {
@@ -28,65 +27,65 @@ XhaustValue func_Readln(std::vector<XhaustValue> args)
     }
     std::string res;
     std::getline(std::cin, res);
-    return XhaustValue::fromString(res);
+    return XhaustValue::String(res);
 }
 
-XhaustValue func_ToNumber(std::vector<XhaustValue> args)
+XhaustValue ToNumber(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
     {
         if (args[0].getType() == XhaustValueTypes::string)
         {
             std::string val = args[0].toString();
-            return XhaustValue::fromNumber(std::stod(val));
+            return XhaustValue::Number(std::stod(val));
         }
         else
         {
-            return XhaustValue::fromNumber(args[0].getNumberValue());
+            return XhaustValue::Number(args[0].getNumberValue());
         }
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_ToString(std::vector<XhaustValue> args)
+XhaustValue ToString(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
     {
-        return XhaustValue::fromString(args[0].toString());
+        return XhaustValue::String(args[0].toString());
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_Type(std::vector<XhaustValue> args)
+XhaustValue Type(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
     {
         XhaustValueTypes type = args[0].getType();
         if (type == XhaustValueTypes::string)
         {
-            return XhaustValue::fromString("string");
+            return XhaustValue::String("string");
         }
         else if (type == XhaustValueTypes::boolean)
         {
-            return XhaustValue::fromString("boolean");
+            return XhaustValue::String("boolean");
         }
         else if (type == XhaustValueTypes::number)
         {
-            return XhaustValue::fromString("number");
+            return XhaustValue::String("number");
         }
         else if (type == XhaustValueTypes::nulltype)
         {
-            return XhaustValue::fromString("null");
+            return XhaustValue::String("null");
         }
         else if (type == XhaustValueTypes::object)
         {
-            return XhaustValue::fromString("object");
+            return XhaustValue::String("object");
         }
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_DoString(std::vector<XhaustValue> args)
+XhaustValue DoString(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
     {
@@ -99,147 +98,148 @@ XhaustValue func_DoString(std::vector<XhaustValue> args)
         }
         catch (std::exception *ex)
         {
-            return XhaustValue::fromNull();
+            return XhaustValue::Null();
         }
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_LoadLines(std::vector<XhaustValue> args)
+XhaustValue LoadLines(std::vector<XhaustValue> args)
 {
     if (args.size() < 1)
-        return XhaustValue::fromNull();
+        return XhaustValue::Null();
     std::fstream file(args[0].toString());
     std::string line;
     std::vector<XhaustValue> *result = new std::vector<XhaustValue>();
     while (file && std::getline(file, line))
     {
-        result->push_back(XhaustValue::fromString(line));
+        result->push_back(XhaustValue::String(line));
     }
-    return XhaustValue::fromObject(result);
+    return XhaustValue::Object(result);
 }
 
-XhaustValue func_ListCreate(std::vector<XhaustValue> args)
+XhaustValue ListCreate(std::vector<XhaustValue> args)
 {
-    return XhaustValue::fromObject(reinterpret_cast<void*>(new std::vector<XhaustValue>()));
+    return XhaustValue::Object(reinterpret_cast<void *>(new std::vector<XhaustValue>()));
 }
 
-XhaustValue func_ListFree(std::vector<XhaustValue> args)
+XhaustValue ListFree(std::vector<XhaustValue> args)
 {
     if (args.size() > 0 && args[0].getType() == XhaustValueTypes::object)
     {
-        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue>*>(args[0].getObjectValue());
+        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue> *>(args[0].getObjectValue());
         delete list;
-        return XhaustValue::fromBoolean(true);
+        return XhaustValue::Boolean(true);
     }
-    return XhaustValue::fromBoolean(false);
+    return XhaustValue::Boolean(false);
 }
 
-XhaustValue func_ListAppend(std::vector<XhaustValue> args)
+XhaustValue ListAppend(std::vector<XhaustValue> args)
 {
     if (args.size() > 0 && args[0].getType() == XhaustValueTypes::object)
     {
-        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue>*>(args[0].getObjectValue());
+        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue> *>(args[0].getObjectValue());
         for (int i = 1; i < args.size(); i++)
         {
             list->push_back(args[i]);
         }
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_ListGet(std::vector<XhaustValue> args)
+XhaustValue ListGet(std::vector<XhaustValue> args)
 {
     if (args.size() > 1 && args[0].getType() == XhaustValueTypes::object)
     {
-        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue>*>(args[0].getObjectValue());
+        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue> *>(args[0].getObjectValue());
         return list->at((int)args[1].getNumberValue());
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_ListSize(std::vector<XhaustValue> args)
+XhaustValue ListSize(std::vector<XhaustValue> args)
 {
     if (args.size() > 0 && args[0].getType() == XhaustValueTypes::object)
     {
-        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue>*>(args[0].getObjectValue());
-        return XhaustValue::fromNumber(list->size());
+        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue> *>(args[0].getObjectValue());
+        return XhaustValue::Number(list->size());
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_ListRemove(std::vector<XhaustValue> args)
+XhaustValue ListRemove(std::vector<XhaustValue> args)
 {
     if (args.size() > 1 && args[0].getType() == XhaustValueTypes::object)
     {
-        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue>*>(args[0].getObjectValue());
+        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue> *>(args[0].getObjectValue());
         int index = (int)args[1].getNumberValue();
         XhaustValue result = list->at(index);
-        list->erase(list->begin()+(index-1));
+        list->erase(list->begin() + (index - 1));
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_ListFind(std::vector<XhaustValue> args)
+XhaustValue ListFind(std::vector<XhaustValue> args)
 {
     if (args.size() > 1 && args[0].getType() == XhaustValueTypes::object)
     {
-        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue>*>(args[0].getObjectValue());
+        std::vector<XhaustValue> *list = reinterpret_cast<std::vector<XhaustValue> *>(args[0].getObjectValue());
         for (int i = 0; i < list->size(); i++)
         {
             if (list->at(i) == args[1])
             {
-                return XhaustValue::fromBoolean(true);
+                return XhaustValue::Boolean(true);
             }
         }
-        return XhaustValue::fromBoolean(false);
+        return XhaustValue::Boolean(false);
     }
-    return XhaustValue::fromNull();
+    return XhaustValue::Null();
 }
 
-XhaustValue func_StrLen(std::vector<XhaustValue> args)
+XhaustValue StrLen(std::vector<XhaustValue> args)
 {
     if (args.size() < 1)
-        return XhaustValue::fromNull();
-    return XhaustValue::fromNumber(args[0].toString().length());
+        return XhaustValue::Null();
+    return XhaustValue::Number(args[0].toString().length());
 }
 
-XhaustValue func_StrGet(std::vector<XhaustValue> args)
+XhaustValue StrGet(std::vector<XhaustValue> args)
 {
     if (args.size() < 2)
-        return XhaustValue::fromNull();
-    return XhaustValue::fromString(std::string() + args[0].toString()[(int)(args[1].getNumberValue()+0.5)]);
+        return XhaustValue::Null();
+    return XhaustValue::String(std::string() + args[0].toString()[(int)(args[1].getNumberValue() + 0.5)]);
 }
 
-XhaustValue func_StrSub(std::vector<XhaustValue> args)
+XhaustValue StrSub(std::vector<XhaustValue> args)
 {
     if (args.size() < 3)
-        return XhaustValue::fromNull();
-    int start = (int)(args[1].getNumberValue()+0.5);
-    int finish = (int)(args[2].getNumberValue()+0.5);
-    int len = (finish-start);
-    return XhaustValue::fromString(args[0].toString().substr(start, len));
+        return XhaustValue::Null();
+    int start = (int)(args[1].getNumberValue() + 0.5);
+    int finish = (int)(args[2].getNumberValue() + 0.5);
+    int len = (finish - start);
+    return XhaustValue::String(args[0].toString().substr(start, len));
 }
 
 StandardFunctions::StandardFunctions()
 {
-    callbacks["Println"] = func_Println;
-    callbacks["Readln"] = func_Readln;
-    callbacks["ToNumber"] = func_ToNumber;
-    callbacks["ToString"] = func_ToString;
-    callbacks["Type"] = func_Type;
-    callbacks["DoString"] = func_DoString;
-    callbacks["LoadLines"] = func_LoadLines;
-    callbacks["ListCreate"] = func_ListCreate;
-    callbacks["ListFree"] = func_ListFree;
-    callbacks["ListAppend"] = func_ListAppend;
-    callbacks["ListRemove"] = func_ListRemove;
-    callbacks["ListGet"] = func_ListGet;
-    callbacks["ListSize"] = func_ListSize;
-    callbacks["ListFind"] = func_ListFind;
-    callbacks["StrLen"] = func_StrLen;
-    callbacks["StrGet"] = func_StrGet;
-    callbacks["StrSub"] = func_StrSub;
+    callbacks["Println"] = Println;
+    //callbacks["out"] = out;
+    callbacks["Readln"] = Readln;
+    callbacks["ToNumber"] = ToNumber;
+    callbacks["ToString"] = ToString;
+    callbacks["Type"] = Type;
+    callbacks["DoString"] = DoString;
+    callbacks["LoadLines"] = LoadLines;
+    callbacks["ListCreate"] = ListCreate;
+    callbacks["ListFree"] = ListFree;
+    callbacks["ListAppend"] = ListAppend;
+    callbacks["ListRemove"] = ListRemove;
+    callbacks["ListGet"] = ListGet;
+    callbacks["ListSize"] = ListSize;
+    callbacks["ListFind"] = ListFind;
+    callbacks["StrLen"] = StrLen;
+    callbacks["StrGet"] = StrGet;
+    callbacks["StrSub"] = StrSub;
 }
 
 StandardFunctions &StandardFunctions::getInstance()
