@@ -11,5 +11,6 @@ exhaust bottles
     if (bottles == 1)
     {
         do Println("No more bottles of beer on the wall")
+        0
     }
 }
