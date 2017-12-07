@@ -85,7 +85,7 @@ XhaustValue Type(std::vector<XhaustValue> args)
     return XhaustValue::Null();
 }
 
-XhaustValue DoString(std::vector<XhaustValue> args)
+XhaustValue Eval(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
     {
@@ -227,7 +227,7 @@ StandardFunctions::StandardFunctions()
     callbacks["ToNumber"] = ToNumber;
     callbacks["ToString"] = ToString;
     callbacks["Type"] = Type;
-    callbacks["DoString"] = DoString;
+    callbacks["Eval"] = Eval;
     callbacks["LoadLines"] = LoadLines;
     callbacks["ListCreate"] = ListCreate;
     callbacks["ListFree"] = ListFree;
