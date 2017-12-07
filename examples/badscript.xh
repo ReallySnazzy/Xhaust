@@ -1,0 +1,5 @@
+do Println("some output")
+do Println(badness+1+apple)
+0
+
+//runtime vs compile time errors?
