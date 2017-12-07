@@ -1,0 +1,9 @@
+bottles = 99
+
+exhaust bottles
+{
+  out(bottles)
+
+  //There is no string data type. This is syntax sugar.
+  out(chars(" bottles of beer on the wall. Take 1 down pass it around\n"))
+}
