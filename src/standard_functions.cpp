@@ -223,7 +223,6 @@ XhaustValue StrSub(std::vector<XhaustValue> args)
 StandardFunctions::StandardFunctions()
 {
     callbacks["Println"] = Println;
-    //callbacks["out"] = out;
     callbacks["Readln"] = Readln;
     callbacks["ToNumber"] = ToNumber;
     callbacks["ToString"] = ToString;
