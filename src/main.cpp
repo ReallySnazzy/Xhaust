@@ -3,35 +3,24 @@
 #include "interpreter.hpp"
 
 #if defined(_WIN32) || defined(_WIN64)
-    // Hack to add chdir to windows
-    #include <windows.h>
-    int chdir(const char *dir)
-    {
-        if (SetCurrentDirectory(dir))
-            return 0;
-        return -1;
-    }
+// Hack to add chdir to windows
+#include <windows.h>
+int chdir(const char *dir)
+{
+    if (SetCurrentDirectory(dir))
+        return 0;
+    return -1;
+}
 #else
-    #include <unistd.h>
+#include <unistd.h>
 #endif
 
-void runCode(std::string source)
+XhaustValue runCode(std::string source)
 {
-    try
-    {
-        Interpreter *i = Interpreter::fromSource(source);
-        std::cout << "Running: " << std::endl << source << std::endl;
-        std::cout << "============================================================" << std::endl;
-        XhaustValue result = i->start();
-        delete i;
-        std::cout << "============================================================" << std::endl;
-        std::cout << "The program returned " << result.toString() << std::endl;
-        std::cout << "============================================================" << std::endl;
-    }
-    catch (std::exception *ex)
-    {
-        std::cout << ex->what() << std::endl;
-    }
+    Interpreter *i = Interpreter::fromSource(source);
+    XhaustValue result = i->start();
+    delete i;
+    return result;
 }
 
 std::string getDirectory(std::string filename)
@@ -39,7 +28,12 @@ std::string getDirectory(std::string filename)
     return filename.substr(0, filename.find_last_of("\\/"));
 }
 
-void runFile(std::string filename)
+std::string getFilename(std::string filename)
+{
+    return filename.substr(filename.find_last_of("\\/") + 1, filename.length());
+}
+
+std::string getContentsFromPath(std::string filename)
 {
     std::fstream sourceFile(filename);
     std::string line;
@@ -51,13 +45,33 @@ void runFile(std::string filename)
         exit(1);
     }
 
-    chdir(getDirectory(filename).c_str());
-
     while (sourceFile && std::getline(sourceFile, line))
     {
         source += line + "\n";
     }
-    runCode(source);
+
+    return source;
+}
+
+void runFile(std::string filepath)
+{
+    std::string source = getContentsFromPath(filepath);
+    chdir(getDirectory(filepath).c_str());
+
+    try
+    {
+        Interpreter *i = Interpreter::fromSource(source);
+        std::cout << "Running: " << getFilename(filepath) << std::endl;
+        std::cout << "============================================================" << std::endl;
+        XhaustValue result = runCode(source);
+        std::cout << "============================================================" << std::endl;
+        std::cout << "The program returned \"" << result.toString() << "\"" << std::endl;
+        std::cout << "============================================================" << std::endl;
+    }
+    catch (std::exception *ex)
+    {
+        std::cout << ex->what() << std::endl;
+    }
 }
 
 int main(int argc, char **argv)
