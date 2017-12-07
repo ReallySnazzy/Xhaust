@@ -114,7 +114,7 @@ TreeNode *TreeGenerator::parseAssignment()
     }
     else
     {
-        return parseConditional();
+        return parseConditional(); //TODO: this aint right
     }
 }
 
@@ -178,7 +178,7 @@ TreeNode *TreeGenerator::parseStatement()
         else if (tokens[marker].value == "exhaust")
             return parseExhaust();
         else
-            throw new SyntaxException(-1, "Unknown keyword: " + tokens[marker].value);
+            throw new SyntaxException(-1, "Unimplemented keyword: " + tokens[marker].value);
     }
     else
     {
@@ -199,7 +199,7 @@ std::vector<TreeNode *> TreeGenerator::buildTree()
         int old = marker;
         nodes.push_back(parseStatement());
         if (old == marker)
-            throw new SyntaxException(-1, "wtf");
+            throw new SyntaxException(-1, "Unparsable statement"); //wtf
     }
     return nodes;
 }
