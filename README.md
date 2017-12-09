@@ -22,7 +22,7 @@ y = <span style="color:orchid">nin</span>()
 z = 0
 <span style="color:orange">exhaust</span> x
 {
-  z = x + y
+  z = z + y
 } <span style="color:gray">//deplete: x = x - 1</span>
 <span style="color:deepskyblue">out</span>(z)
 </code></pre>
