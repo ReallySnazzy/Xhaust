@@ -3,9 +3,9 @@
 
 #include "lexer.hpp"
 
-#include<vector>
-#include<string>
-#include<iostream>
+#include <vector>
+#include <string>
+#include <iostream>
 
 #define TN_UNDEFINED -1
 #define TN_FUNC_CALL 0
@@ -16,9 +16,10 @@
 #define TN_IF 5
 #define TN_EXHAUST 6
 
+#pragma region Nodes
 class TreeNode
 {
-public:
+  public:
     int type = TN_UNDEFINED;
     TreeNode() = default;
     virtual ~TreeNode() = default;
@@ -27,30 +28,40 @@ public:
 
 class FunctionCallNode : public TreeNode
 {
-public:
+  public:
     const std::string functionName;
-    const std::vector<TreeNode*> functionArguments;
+    const std::vector<TreeNode *> functionArguments;
 
-    FunctionCallNode(std::string functionName, std::vector<TreeNode*> args)
-    : functionName(functionName), functionArguments(args) {type = TN_FUNC_CALL;}
-    virtual ~FunctionCallNode() {for (TreeNode* tn : functionArguments) if (tn != nullptr) delete tn;}
+    FunctionCallNode(std::string functionName, std::vector<TreeNode *> args)
+        : functionName(functionName), functionArguments(args) { type = TN_FUNC_CALL; }
+    virtual ~FunctionCallNode()
+    {
+        for (TreeNode *tn : functionArguments)
+            if (tn != nullptr)
+                delete tn;
+    }
 
     virtual void print(int level) const
     {
         for (int i = 0; i < level; i++)
             std::cout << "  ";
         std::cout << "FunctionCall : " << functionName << std::endl;
-        for (TreeNode* node : functionArguments)
-            node->print(level+1);
+        for (TreeNode *node : functionArguments)
+            node->print(level + 1);
     }
 };
 
 class GroupNode : public TreeNode
 {
-public:
+  public:
     const TreeNode *expression = nullptr;
-    GroupNode(TreeNode *expr) : expression(expr) {type = TN_GROUP;}
-    virtual ~GroupNode() { if (expression != nullptr) delete expression; expression = nullptr; }
+    GroupNode(TreeNode *expr) : expression(expr) { type = TN_GROUP; }
+    virtual ~GroupNode()
+    {
+        if (expression != nullptr)
+            delete expression;
+        expression = nullptr;
+    }
 
     virtual void print(int level) const
     {
@@ -63,10 +74,10 @@ public:
 
 class ValueNode : public TreeNode
 {
-public:
+  public:
     const std::string value;
     const bool isConstant;
-    ValueNode(std::string value, bool isConstant) : value(value), isConstant(isConstant) {type = TN_VALUE;}
+    ValueNode(std::string value, bool isConstant) : value(value), isConstant(isConstant) { type = TN_VALUE; }
     virtual ~ValueNode() = default;
 
     virtual void print(int level) const
@@ -79,10 +90,10 @@ public:
 
 class BlockNode : public TreeNode
 {
-public:
-    const std::vector<TreeNode*> body;
+  public:
+    const std::vector<TreeNode *> body;
 
-    BlockNode(std::vector<TreeNode*> body) : body(body)
+    BlockNode(std::vector<TreeNode *> body) : body(body)
     {
         type = TN_BLOCK;
     }
@@ -105,7 +116,7 @@ public:
 
 class ExhaustNode : public TreeNode
 {
-public:
+  public:
     const TreeNode *condition;
     const TreeNode *body;
     const bool usesVariable;
@@ -128,16 +139,16 @@ public:
             std::cout << "  ";
         }
         std::cout << "Exhaust" << std::endl;
-        condition->print(level+1);
-        body->print(level+1);
+        condition->print(level + 1);
+        body->print(level + 1);
     }
 };
 
 class IfNode : public TreeNode
 {
-public:
-    const TreeNode* condition;
-    const TreeNode* body;
+  public:
+    const TreeNode *condition;
+    const TreeNode *body;
 
     IfNode(TreeNode *condition, TreeNode *body) : condition(condition), body(body)
     {
@@ -155,26 +166,29 @@ public:
         for (int i = 0; i < level; i++)
             std::cout << "  ";
         std::cout << "If" << std::endl;
-        condition->print(level+1);
-        body->print(level+1);
+        condition->print(level + 1);
+        body->print(level + 1);
     }
 };
 
 class OperatorNode : public TreeNode
 {
-public:
+  public:
     const std::string op;
     const TreeNode *lhs = nullptr, *rhs = nullptr;
 
-public:
+  public:
     OperatorNode(std::string op, TreeNode *lhs, TreeNode *rhs) : op(op), lhs(lhs), rhs(rhs)
     {
         type = TN_OPERATOR;
     }
 
-    virtual ~OperatorNode() {
-        if (lhs != nullptr) delete lhs;
-        if (rhs != nullptr) delete rhs;
+    virtual ~OperatorNode()
+    {
+        if (lhs != nullptr)
+            delete lhs;
+        if (rhs != nullptr)
+            delete rhs;
     }
 
     virtual void print(int level) const
@@ -187,27 +201,31 @@ public:
     }
 };
 
+#pragma endregion
+
+#pragma region TreeGenerator
 class TreeGenerator
 {
-public:
+  public:
     std::vector<Token> tokens;
     int marker = 0;
+    TreeNode *runningLHS = nullptr;
 
     TreeGenerator(std::vector<Token>);
-    static TreeGenerator* fromString(std::string source);
-    FunctionCallNode* parseFunctionCall();
-    GroupNode* parseGroup();
-    TreeNode* parseExpression();
-    TreeNode *parseExhaust();
-    TreeNode* parseMultiplication();
-    TreeNode* parseAddition();
-    TreeNode* parseAssignment();
-    TreeNode* parseFactor();
-    BlockNode* parseBlock();
-    TreeNode* parseConditional();
-    IfNode* parseIf();
-    TreeNode* parseStatement();
-    std::vector<TreeNode*> buildTree();
+    static TreeGenerator *fromString(std::string source);
+    BlockNode *parseBlock();
+    ExhaustNode *parseExhaust();
+    IfNode *parseIf();
+    FunctionCallNode *parseFunctionCall();
+    GroupNode *parseGroup();
+    TreeNode *parseFactor();
+    OperatorNode *parseBinaryOperation();
+    TreeNode *parseExpression();
+    TreeNode *parseConditional();
+    TreeNode *parseStatement();
+    std::vector<TreeNode *> buildTree();
 };
+
+#pragma endregion
 
 #endif
