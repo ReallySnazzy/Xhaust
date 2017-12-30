@@ -85,6 +85,7 @@ XhaustValue Type(std::vector<XhaustValue> args)
     return XhaustValue::Null();
 }
 
+//@bookmark{samybencherif}
 XhaustValue Eval(std::vector<XhaustValue> args)
 {
     if (args.size() > 0)
@@ -222,23 +223,24 @@ XhaustValue StrSub(std::vector<XhaustValue> args)
 
 StandardFunctions::StandardFunctions()
 {
-    callbacks["Println"] = Println;
-    callbacks["Readln"] = Readln;
-    callbacks["ToNumber"] = ToNumber;
-    callbacks["ToString"] = ToString;
-    callbacks["Type"] = Type;
-    callbacks["Eval"] = Eval;
-    callbacks["LoadLines"] = LoadLines;
-    callbacks["ListCreate"] = ListCreate;
-    callbacks["ListFree"] = ListFree;
-    callbacks["ListAppend"] = ListAppend;
-    callbacks["ListRemove"] = ListRemove;
-    callbacks["ListGet"] = ListGet;
-    callbacks["ListSize"] = ListSize;
-    callbacks["ListFind"] = ListFind;
-    callbacks["StrLen"] = StrLen;
-    callbacks["StrGet"] = StrGet;
-    callbacks["StrSub"] = StrSub;
+    //@bookmark{samybencherif}[Check back to see what the deal with this callbacks dict is]
+    callbacks["println"] = Println;
+    callbacks["readln"] = Readln;
+    callbacks["toNumber"] = ToNumber;
+    callbacks["toString"] = ToString;
+    callbacks["type"] = Type;
+    callbacks["eval"] = Eval;
+    callbacks["loadLines"] = LoadLines;
+    callbacks["listCreate"] = ListCreate;
+    callbacks["listFree"] = ListFree;
+    callbacks["listAppend"] = ListAppend;
+    callbacks["listRemove"] = ListRemove;
+    callbacks["listGet"] = ListGet;
+    callbacks["listSize"] = ListSize;
+    callbacks["listFind"] = ListFind;
+    callbacks["strLen"] = StrLen;
+    callbacks["strGet"] = StrGet;
+    callbacks["strSub"] = StrSub;
 }
 
 StandardFunctions &StandardFunctions::getInstance()
