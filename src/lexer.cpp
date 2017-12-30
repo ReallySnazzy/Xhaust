@@ -16,7 +16,10 @@ class Lexer
         this->source = source;
     }
 
-    const std::vector<std::string> OPERATORS = {">=", "<=", "<", "%", ">", "==", "=", "!=", "+", "-", "**", "*", "/", "^", "~", "!", "(", ")", "[", "]", "{", "}", ";", ","};
+    //longer operators should go first
+    const std::vector<std::string> BINARYOPS = {">=", "<=", "<", "%", ">", "==", "=", "!=", "+", "-", "**", "*", "/", "^"}; //I took out ! and ~
+    const std::vector<std::string> REGULATORS = {"(", ")", "[", "]", "{", "}", ";", ","};
+
     const std::vector<std::string> KEYWORDS = {"exhaust", "do", "if"};
 
     void addToken(std::string value, int type)
@@ -81,19 +84,33 @@ class Lexer
         addToken(str, TK_STRING);
     }
 
-    void readOperator(int &marker)
+    void readSymbols(int &marker)
     {
         bool added = false;
-        for (std::string possibleOperator : OPERATORS)
+        for (std::string possibleBinOp : BINARYOPS)
         {
-            if (source.substr(marker, possibleOperator.length()) == possibleOperator)
+            if (source.substr(marker, possibleBinOp.length()) == possibleBinOp)
             {
-                marker += possibleOperator.length();
-                addToken(possibleOperator, TK_OPERATOR);
+                marker += possibleBinOp.length();
+
+                addToken(possibleBinOp, TK_BINARYOPERATOR);
                 added = true;
                 break;
             }
         }
+
+        for (std::string possibleRegulator : REGULATORS)
+        {
+            if (source.substr(marker, possibleRegulator.length()) == possibleRegulator)
+            {
+                marker += possibleRegulator.length();
+
+                addToken(possibleRegulator, TK_REGULATOR);
+                added = true;
+                break;
+            }
+        }
+
         if (!added)
         {
             int code = source[marker];
@@ -144,7 +161,7 @@ class Lexer
             }
             else
             {
-                readOperator(marker);
+                readSymbols(marker);
             }
         }
     }
