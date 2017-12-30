@@ -1,205 +1,224 @@
 #include "treegen.hpp"
+#include <stdio.h>
+
+//TODO further clean up this file.
+/*
+I don't want any functions that do more than they say they do.
+eg parseFactor should not also parseGroup.
+
+also like every file in this project, error handling can be improved.
+
+Otherwise the thing is looking like it's running nice
+*/
 
 TreeGenerator *TreeGenerator::fromString(std::string source)
 {
-    return new TreeGenerator(tokenize(source));
+	return new TreeGenerator(tokenize(source));
 }
 
 TreeGenerator::TreeGenerator(std::vector<Token> tokens)
 {
-    this->tokens = tokens;
-}
-
-FunctionCallNode *TreeGenerator::parseFunctionCall()
-{
-    if (tokens[marker++].value != "do")
-    {
-        throw new SyntaxException(-1, "Expected do at beginning of function call");
-    }
-    std::string functionIdentifier = tokens[marker++].value;
-    if (tokens[marker++].value != "(")
-    {
-        throw new SyntaxException(-1, "Expected ( at the beginning of function arguments");
-    }
-    std::vector<TreeNode *> arguments;
-    if (tokens[marker].value != ")")
-    {
-        do
-        {
-            arguments.push_back(parseExpression());
-        } while (tokens[marker++].value == ",");
-        --marker;
-    }
-    if (tokens[marker++].value != ")")
-    {
-        throw new SyntaxException(-1, "Expected ) at the end of function arguments");
-    }
-    return new FunctionCallNode(functionIdentifier, arguments);
-}
-
-GroupNode *TreeGenerator::parseGroup()
-{
-    ++marker;
-    GroupNode *res = new GroupNode(parseExpression());
-    if (tokens[marker++].value != ")")
-    {
-        throw new SyntaxException(-1, ") expected to close expression");
-    }
-    return res;
-}
-
-TreeNode *TreeGenerator::parseFactor()
-{
-    Token token = tokens[marker];
-    if (token.type != TK_IDENTIFIER && token.type != TK_NUMBER && token.type != TK_STRING)
-    {
-        if (token.type == TK_OPERATOR && token.value == "(")
-            return parseGroup();
-        else if (token.type == TK_KEYWORD && token.value == "do")
-            return parseFunctionCall();
-        else
-            throw new SyntaxException(-1, "Expected number or identifier, got " + token.value);
-    }
-    marker++;
-    return new ValueNode(token.value, token.type == TK_NUMBER || token.type == TK_STRING);
-}
-
-TreeNode *TreeGenerator::parseMultiplication()
-{
-    TreeNode *lhs = parseFactor();
-    if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "*" || tokens[marker].value == "/"))
-    {
-        std::string op = tokens[marker++].value;
-        TreeNode *rhs = parseMultiplication();
-        return new OperatorNode(op, lhs, rhs);
-    }
-    return lhs;
-}
-
-TreeNode *TreeGenerator::parseAddition()
-{
-    TreeNode *lhs = parseMultiplication();
-    if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && (tokens[marker].value == "+" || tokens[marker].value == "-"))
-    {
-        std::string op = tokens[marker++].value;
-        TreeNode *rhs = parseAddition();
-        return new OperatorNode(op, lhs, rhs);
-    }
-    return lhs;
-}
-
-TreeNode *TreeGenerator::parseConditional()
-{
-    TreeNode *lhs = parseAddition();
-    if (tokens.size() > marker + 1 && tokens[marker].type == TK_OPERATOR)
-    {
-        if (tokens[marker].value == "==" || tokens[marker].value == ">=" || tokens[marker].value == "<=" || tokens[marker].value == "!=" || tokens[marker].value == ">" || tokens[marker].value == "<")
-        {
-            std::string conditionalOp = tokens[marker++].value;
-            TreeNode *rhs = parseAddition();
-            return new OperatorNode(conditionalOp, lhs, rhs);
-        }
-    }
-    return lhs;
-}
-
-TreeNode *TreeGenerator::parseAssignment()
-{
-    if (tokens.size() > marker + 1 && tokens[marker].type == TK_IDENTIFIER && tokens[marker + 1].value == "=")
-    {
-        TreeNode *lhs = new ValueNode(tokens[marker++].value, false);
-        marker++; // Skip over =
-        TreeNode *rhs = parseConditional();
-        return new OperatorNode("=", lhs, rhs);
-    }
-    else
-    {
-        return parseConditional(); //TODO: this aint right
-    }
+	this->tokens = tokens;
 }
 
 BlockNode *TreeGenerator::parseBlock()
 {
-    if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && tokens[marker].value == "{")
-        marker++;
-    else
-        throw new SyntaxException(-1, "{ expected.");
-    std::vector<TreeNode *> body;
-    while (tokens.size() > marker && (tokens[marker].type != TK_OPERATOR || tokens[marker].value != "}"))
-    {
-        body.push_back(parseStatement());
-    }
-    if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && tokens[marker].value == "}")
-        ++marker;
-    else
-        throw new SyntaxException(-1, "} expected.");
-    return new BlockNode(body);
+	if (tokens.size() > marker && tokens[marker].type == TK_REGULATOR && tokens[marker].value == "{")
+	{
+		marker++;
+	}
+	else
+	{
+		throw new SyntaxException(-1, "{ expected.");
+	}
+
+	std::vector<TreeNode *> body;
+	while (tokens.size() > marker && (tokens[marker].type != TK_REGULATOR || tokens[marker].value != "}"))
+	{
+		body.push_back(parseStatement());
+	}
+	if (tokens.size() > marker)
+		++marker;
+	else
+		throw new SyntaxException(-1, "} expected.");
+	return new BlockNode(body);
+}
+
+ExhaustNode *TreeGenerator::parseExhaust()
+{
+	if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "exhaust")
+		++marker;
+	else
+		throw new SyntaxException(-1, "exhaust expected"); //never happens
+	TreeNode *condition = parseExpression();
+	bool usesVariable = (condition->type == TN_VALUE && !reinterpret_cast<ValueNode *>(condition)->isConstant);
+
+	TreeNode *block = parseBlock();
+	return new ExhaustNode(condition, block, usesVariable);
 }
 
 IfNode *TreeGenerator::parseIf()
 {
-    if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "if")
-        ++marker;
-    else
-        throw new SyntaxException(-1, "if expected");
-    if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && tokens[marker].value == "(")
-        ++marker;
-    else
-        throw new SyntaxException(-1, "( expected after if");
-    TreeNode *condition = parseExpression();
-    if (tokens.size() > marker && tokens[marker].type == TK_OPERATOR && tokens[marker].value == ")")
-        ++marker;
-    else
-        throw new SyntaxException(-1, ") expected after if condition");
-    TreeNode *block = parseBlock();
-    return new IfNode(condition, block);
+	if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "if")
+		++marker;
+	else
+		throw new SyntaxException(-1, "if expected");
+	if (tokens.size() > marker && tokens[marker].type == TK_REGULATOR && tokens[marker].value == "(")
+	{
+		++marker;
+	}
+	else
+		throw new SyntaxException(-1, "( expected after if");
+	TreeNode *condition = parseExpression();
+	if (tokens.size() > marker && tokens[marker].type == TK_REGULATOR && tokens[marker].value == ")")
+	{
+
+		++marker;
+	}
+	else
+		throw new SyntaxException(-1, ") expected after if condition");
+
+	TreeNode *block = parseBlock();
+	return new IfNode(condition, block);
 }
 
-TreeNode *TreeGenerator::parseExhaust()
+FunctionCallNode *TreeGenerator::parseFunctionCall()
 {
-    if (tokens[marker].type == TK_KEYWORD && tokens[marker].value == "exhaust")
-        ++marker;
-    else
-        throw new SyntaxException(-1, "exhaust expected");
-    TreeNode *condition = parseExpression();
-    bool usesVariable = (condition->type == TN_VALUE && !reinterpret_cast<ValueNode *>(condition)->isConstant);
-    TreeNode *block = parseBlock();
-    return new ExhaustNode(condition, block, usesVariable);
+	std::string identifier = tokens[marker++].value;
+	if (tokens[marker++].value != "(")
+	{
+		throw new SyntaxException(-1, "Expected ( at the beginning of function arguments");
+	}
+	std::vector<TreeNode *> arguments;
+	if (tokens[marker].value != ")")
+	{
+		do
+		{
+			arguments.push_back(parseExpression());
+		} while (tokens[marker++].value == ",");
+		--marker;
+	}
+	if (tokens[marker++].value != ")")
+	{
+		throw new SyntaxException(-1, "Expected ) at the end of function arguments");
+	}
+	return new FunctionCallNode(identifier, arguments);
 }
 
-TreeNode *TreeGenerator::parseStatement()
+GroupNode *TreeGenerator::parseGroup()
 {
-    if (tokens.size() > marker && tokens[marker].type == TK_KEYWORD)
-    {
-        if (tokens[marker].value == "if")
-            return parseIf();
-        else if (tokens[marker].value == "do")
-            return parseFunctionCall();
-        else if (tokens[marker].value == "exhaust")
-            return parseExhaust();
-        else
-            throw new SyntaxException(-1, "Unimplemented keyword: " + tokens[marker].value);
-    }
-    else
-    {
-        return parseExpression();
-    }
+	++marker;
+	GroupNode *res = new GroupNode(parseExpression());
+	if (tokens[marker++].value != ")")
+	{
+		throw new SyntaxException(-1, ") expected to close expression");
+	}
+	return res;
+}
+
+TreeNode *TreeGenerator::parseFactor()
+{
+	Token token = tokens[marker];
+	if (token.type != TK_IDENTIFIER && token.type != TK_NUMBER && token.type != TK_STRING)
+	{
+		if (token.type == TK_REGULATOR && token.value == "(")
+			return parseGroup();
+		else
+			throw new SyntaxException(-1, "Expected value or identifier, got " + token.value);
+	}
+	marker++;
+	return new ValueNode(token.value, token.type == TK_NUMBER || token.type == TK_STRING);
+}
+
+OperatorNode *TreeGenerator::parseBinaryOperation()
+{
+	if (runningLHS == nullptr)
+		throw new SyntaxException(-1, "Binary operator missing left hand side.");
+
+	TreeNode *lhs = runningLHS;
+	std::string op = tokens[marker++].value;
+	int oldMarker = marker;
+	TreeNode *rhs = parseExpression();
+
+	if (oldMarker == marker)
+		throw new SyntaxException(-1, "Binary operator missing right hand side.");
+
+	return new OperatorNode(op, lhs, rhs);
 }
 
 TreeNode *TreeGenerator::parseExpression()
 {
-    return parseAssignment();
+
+	if (tokens.size() > marker)
+	{
+		switch (tokens[marker].type)
+		{
+		case TK_BINARYOPERATOR:
+			runningLHS = parseBinaryOperation();
+			break;
+		case TK_IDENTIFIER:
+			if (tokens.size() > marker + 1 && tokens[marker + 1].value == "(")
+				runningLHS = parseFunctionCall();
+			else
+				runningLHS = parseFactor(); //variable
+			break;
+		case TK_NUMBER:
+		case TK_STRING:
+		case TK_REGULATOR: //should be broken up into parseGroup / parseLiteral / etc
+			runningLHS = parseFactor();
+			break;
+		}
+		if (tokens.size() > marker && tokens[marker].type == TK_BINARYOPERATOR) //hmmm need to check the reasoning + edge cases
+			runningLHS = parseExpression();
+		//else if (runningLHS != nullptr)
+		return runningLHS;
+	}
+
+	throw new SyntaxException(-1, "Unexpected token: \"" + tokens[marker].value + "\"");
+}
+
+TreeNode *TreeGenerator::parseStatement()
+{
+	if (tokens.size() > marker && tokens[marker].type == TK_KEYWORD)
+	{
+
+		//nullify running lhs
+		runningLHS = nullptr;
+
+		if (tokens[marker].value == "exhaust")
+		{
+			return parseExhaust();
+		}
+		else if (tokens[marker].value == "if")
+		{
+			return parseIf();
+		}
+		else //todo make sure function call makes it to parseExp
+		{
+			throw new SyntaxException(-1, "Unimplemented keyword: " + tokens[marker].value);
+		}
+	}
+	else
+	{
+		//set running lhs
+		runningLHS = parseExpression();
+
+		return runningLHS;
+	}
 }
 
 std::vector<TreeNode *> TreeGenerator::buildTree()
 {
-    std::vector<TreeNode *> nodes;
-    while (marker < tokens.size())
-    {
-        int old = marker;
-        nodes.push_back(parseStatement());
-        if (old == marker)
-            throw new SyntaxException(-1, "Unparsable statement"); //wtf
-    }
-    return nodes;
+	std::vector<TreeNode *> nodes;
+	while (marker < tokens.size())
+	{
+		int oldMarker = marker;
+
+		nodes.push_back(parseStatement());
+
+		if (oldMarker == marker)
+			throw new SyntaxException(-1, "Unparsable fragment."); //wtf
+	}
+
+	return nodes;
 }
