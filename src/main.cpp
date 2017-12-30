@@ -1,6 +1,12 @@
+
 #include <iostream>
 #include <fstream>
 #include "interpreter.hpp"
+
+bool DEBUG_PRINT_TOKENS = false;
+bool DEBUG_PRINT_TREE = false; //doesn't do anything atm
+
+//This file should be renamed to Xhaust.cpp for coolness
 
 #if defined(_WIN32) || defined(_WIN64)
 // Hack to add chdir to windows
@@ -17,12 +23,9 @@ int chdir(const char *dir)
 
 //TODO: runCode takes Interpreter obj and exceptions = "run time exception"
 //Exceptions creating Interpreter obj should then be like "compile time exception" eg syntax error
-XhaustValue runCode(std::string source)
+XhaustValue runCode(Interpreter *i)
 {
-    Interpreter *i = Interpreter::fromSource(source);
-    XhaustValue result = i->start();
-    delete i;
-    return result;
+    return i->start();
 }
 
 std::string getDirectory(std::string filename)
@@ -60,11 +63,35 @@ void runFile(std::string filepath)
     std::string source = getContentsFromPath(filepath);
     chdir(getDirectory(filepath).c_str());
 
+    if (DEBUG_PRINT_TOKENS == true)
+    {
+        std::cout << "Tokens:" << std::endl;
+        std::vector<Token> tokens = tokenize(source);
+        for (Token t : tokens)
+        {
+            std::cout << t.value << " [" << t.type << "]" << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
     std::cout << "Running: " << getFilename(filepath) << std::endl;
+    std::cout << "Interpreting..." << std::endl;
+    Interpreter *i;
+    try
+    {
+        i = Interpreter::fromSource(source);
+    }
+    catch (std::exception *ex)
+    {
+        std::cout << "Interpretation error." << std::endl;
+        std::cout << ex->what() << std::endl;
+        std::exit(1);
+    }
     std::cout << "=============================BEGIN=============================" << std::endl;
     try
     {
-        XhaustValue result = runCode(source);
+        XhaustValue result = runCode(i);
+        delete i;
         std::cout << "============================= END =============================" << std::endl;
         std::cout << "The program returned \"" << result.toString() << "\"" << std::endl
                   << std::endl;
@@ -79,7 +106,21 @@ void runFile(std::string filepath)
 
 int main(int argc, char **argv)
 {
-    if (argc > 1)
+    //todo add some more debug modes
+    //todo support real arg flags
+    if (argc > 2 && strncmp(argv[1], "--print-tokens", 14) == 0)
+    {
+        DEBUG_PRINT_TOKENS = true;
+        std::string fileName = std::string(argv[2]);
+        runFile(fileName);
+    }
+    if (argc > 2 && strncmp(argv[1], "--print-parseTree", 17) == 0)
+    {
+        DEBUG_PRINT_TREE = true;
+        std::string fileName = std::string(argv[2]);
+        runFile(fileName);
+    }
+    else if (argc > 1)
     {
         std::string fileName = std::string(argv[1]);
         runFile(fileName);
