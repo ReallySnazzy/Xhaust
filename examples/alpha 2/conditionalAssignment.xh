@@ -1,0 +1,30 @@
+//problem with Alpha 1
+	// Assignment is considered an expression,
+	// but does not evaluate to a truthy value.
+	// And if statement returns <conditional>
+
+//solution
+	// Assignment shall evaluate to rhs.
+	// if statement shall evaluate to bool(<conditional>)...
+	// actually what should if statement evaluate to?
+
+	// if true --> evals to supplied code block
+	// if false --> evals to empty code block or null?
+
+	// This addition with incidentally allow for things like
+	// x = y = 5
+
+if (x=2)
+{
+	do Println("whoops")
+}
+
+//exhaustable : (.reduce(), .lit())
+
+
+
+
+//timeout(if (variable) {printLn("wow)}, 1000)
+
+//if (if (true) { echo hello }){echo okay}
+
