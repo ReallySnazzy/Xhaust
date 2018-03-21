@@ -1,0 +1,8 @@
+bottles = 99
+
+exhaust bottles
+{
+    bottlesString = do StrSub(do ToString(bottles), 0, (do StrLen(bottles)) - 2)
+    do Println(bottlesString + " bottles of beer on the wall. Take 1 down pass it around")
+}
+do Println("No more bottles of beer on the wall")

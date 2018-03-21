@@ -1,8 +1,8 @@
 bottles = 99
 
+//Cool. Quite a bit happier with this version
+
 exhaust bottles
 {
-    bottlesString = do StrSub(do ToString(bottles), 0, (do StrLen(bottles)) - 2)
-    do Println(bottlesString + " bottles of beer on the wall. Take 1 down pass it around")
+  println(toString(bottles) + " bottles of whiskey on the wall. Take 1 down pass it around")
 }
-do Println("No more bottles of beer on the wall")

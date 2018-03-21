@@ -1,8 +1,0 @@
-bottles = 99
-
-//Cool. Quite a bit happier with this version
-
-exhaust bottles
-{
-  println(toString(bottles) + " bottles of whiskey on the wall. Take 1 down pass it around")
-}
