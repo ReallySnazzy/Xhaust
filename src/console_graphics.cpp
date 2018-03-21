@@ -333,11 +333,15 @@ int main(int argc, char **argv)
 	//really play nicely together. they can but it's not cross platform
 	{
 		duration = 0;
-		start = std::clock();
-		while (duration < .1)
-		{
-			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-		}
+
+		// start = std::clock();
+		// while (duration < .1)
+		// {
+		// 	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+		// }
+
+		std::getc(std::cin); //proper keyboard input is system/console dependant
+
 		putPixel(px, height - 10);
 		blit();
 
