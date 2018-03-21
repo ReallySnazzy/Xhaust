@@ -1,18 +1,8 @@
 bottles = 99
 
+//Cool. Quite a bit happier with this version
+
 exhaust bottles
 {
-  out(bottles)
-
-  //There is no string data type. This is syntax sugar.
-  out(chars(" bottles of beer on the wall. Take 1 down pass it around\n"))
+  println(toString(bottles) + " bottles of whiskey on the wall. Take 1 down pass it around")
 }
-
-// bottles = 99
-
-// exhaust bottles
-// {
-//     bottlesString = strSub(toString(bottles), 0, (strLen(bottles)) - 2)
-//     print(bottlesString + " bottles of beer on the wall. Take 1 down pass it around")
-// }
-// print("No more bottles of beer on the wall")

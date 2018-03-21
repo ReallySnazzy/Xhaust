@@ -1,0 +1,67 @@
+//Just a concept for now. Not implemented
+
+//graphics
+// - getWidth
+// - getHeight
+
+// - setColor
+
+// - line
+// - putPixel
+
+// - keyEvents
+
+//using tGaming
+//{
+w = width; //seems to annoying
+h = height; //maybe it's fine
+
+x = 0
+
+setColor(248, 46, 104)
+line(0,0,w,h)
+
+//don't have these pretty colors to work with :(
+//or maybe we do ?
+//looks like we do in some consoles and not others
+//but luckily i've implemented a setCharwiseBrightness
+//function which will render using different characters
+//to simulate brightness
+setColor(47, 46, 248)
+
+
+//frame
+
+//Deplete:
+//wait $1 sec
+//check for resize, handle if necessary
+//blit buffer to screen
+
+//DepletionInterval: deltaTime
+//Xhausted: after $2 sec. default infinite
+
+fps = 10
+xhaust timedInterval(1/fps)
+{
+	//idea for shortcuts?:
+	//exploit console_getwidth() as w
+
+	putPixel(x,h-1)
+
+	if (x < w)
+		x = x + 1
+
+	//keyEvents
+	//Deplete: pop from keyboard queue
+	//DepletionInterval: the keycode?!
+	//Xhausted: when queue empty
+	xhaust keyEvents //to keyCode
+	{
+		putText(0,0,"Holy shit boog. You pressed a key!")
+	}
+	xhaust didResize
+	{
+
+	}
+} //deplete step
+//}
