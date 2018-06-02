@@ -1,3 +1,5 @@
+![bad exhaust image](exhaust_small.png)
+
 # Xhaust
 [![Build Status](https://travis-ci.org/SamyBencherif/Xhaust.svg?branch=master)](https://travis-ci.org/SamyBencherif/Xhaust)
 
